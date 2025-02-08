@@ -1,6 +1,7 @@
 - name: Setup Radar Demo
   roles:
     - role: distupgrade
+    - role: bash
     - role: direnv
     - role: python
     - role: poetry
