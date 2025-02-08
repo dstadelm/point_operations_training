@@ -6,6 +6,7 @@
     - role: direnv
     - role: python
     - role: poetry
+    - role: launcher
   tasks:
     - name: Install System Packages
       become: true

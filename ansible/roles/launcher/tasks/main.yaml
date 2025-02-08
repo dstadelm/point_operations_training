@@ -1,0 +1,27 @@
+- name: Place the start_demo script in $HOME
+  become: false
+  ansible.builtin.copy:
+    content: |
+      #!/bin/bash
+      SCRIPT=$(readlink -f "$0")
+      SCRIPTPATH=$(dirname "$SCRIPT")
+      cd {{ playbook_dir }}/.. || exit 1
+      eval "$(direnv export bash)"
+      direnv allow .
+      poetry install
+      cd /
+      cd {{ playbook_dir }}/.. || exit 1
+      python3 point_operations_training.py &
+    dest: ~/.local/bin/point_operations_training.sh
+    mode: '0755'
+- name: Create launcher script
+  become: false
+  ansible.builtin.copy:
+    dest: ~/.local/share/applications/point_operations_training.desktop
+    content: |
+      [Desktop Entry]
+      Type=Application
+      Terminal=true
+      Name=Point Operations Training
+      Exec=point_operations_training.sh
+    mode: '0644'
