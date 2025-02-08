@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from leana.learn import main
+from point_operations_training.training import main
 
 
 if __name__ == "__main__":
