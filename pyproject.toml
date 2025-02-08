@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "leana"
+name = "point_operations_training"
 version = "0.1.0"
 description = ""
 authors = ["David Stadelmann <david.stadelmann@scs.ch>"]
