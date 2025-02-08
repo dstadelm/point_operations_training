@@ -1,4 +1,5 @@
 - name: Setup Radar Demo
+  hosts: dev
   roles:
     - role: distupgrade
     - role: bash
