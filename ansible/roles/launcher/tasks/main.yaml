@@ -11,7 +11,7 @@
       poetry install
       cd /
       cd {{ playbook_dir }}/.. || exit 1
-      python3 point_operations_training.py &
+      python3 main.py &
     dest: ~/.local/bin/point_operations_training.sh
     mode: '0755'
 - name: Create launcher script
