@@ -1,0 +1,16 @@
+- name: Setup Radar Demo
+  roles:
+    - role: distupgrade
+    - role: direnv
+    - role: python
+    - role: poetry
+  tasks:
+    - name: Install System Packages
+      become: true
+      ansible.builtin.package:
+        name:
+          - curl
+          - htop
+          - git
+          - vim
+        state: present
