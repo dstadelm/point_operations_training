@@ -5,3 +5,7 @@ Assignement {
   width: 40;
   text-align: center;
 }
+
+Container {
+  max-height: 60%;
+}

@@ -1,4 +1,6 @@
 from functools import wraps
+import json
+from pathlib import Path
 from typing import Callable, TypeVar
 from datetime import datetime
 from random import randint
@@ -66,7 +68,30 @@ class RandValStats:
             "max": float(f"{max:.2f}"),
             "min": float(f"{min:.2f}"),
         }
+        self.save_stats(entry)
         return entry
+
+    def load_stats(self) -> dict[str, list[dict[str, str | float]]]:
+        stats_file = Path("stats.json")
+        data: dict[str, list[dict[str, str | float]]] = {}
+        if stats_file.is_file():
+            with open("stats.json") as stats:
+                data = json.load(stats)
+
+        return data
+
+    def save_stats(self, entry: dict[str, str | float]) -> None:
+
+        data: dict[str, list[dict[str, str | float]]] = self.load_stats()
+
+        if "stats" in data:
+            data["stats"].append(entry)
+        else:
+            data = {"stats": []}
+            data["stats"].append(entry)
+
+        with open("stats.json", "w") as stats:
+            json.dump(data, stats)
 
     @property
     def num_train_values(self) -> int:
