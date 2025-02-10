@@ -46,7 +46,8 @@ class StatPlot(PlotextPlot):
 class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
     CSS_PATH = "learn.tcss"  # pyright: ignore [reportUnannotatedClassAttribute]
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
-        ("enter", "new_mult", "Next")
+        ("enter", "new_mult", "Next"),
+        ("d", "toggle_dark", "Toggle dark mode"),
     ]
 
     NUM_ASSIGNEMENTS: int = 20
@@ -97,6 +98,12 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
             stats_label.update("Done")
             container = self.query_one(Container)
             _ = container.mount(StatPlot(assignement.stats.load_stats()))
+
+    def action_toggle_dark(self) -> None:
+        """An action to toggle dark mode."""
+        self.theme = (
+            "textual-dark" if self.theme == "textual-light" else "textual-light"
+        )
 
 
 if __name__ == "__main__":

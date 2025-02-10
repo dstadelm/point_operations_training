@@ -5,6 +5,13 @@ Assignement {
   width: 40;
   text-align: center;
 }
+ProgressBar {
+  margin: 1;
+}
+#stats {
+  margin: 1;
+  padding: 1;
+}
 
 Container {
   max-height: 60%;
