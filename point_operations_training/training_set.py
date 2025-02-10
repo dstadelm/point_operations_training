@@ -68,10 +68,13 @@ class RandValStats:
         }
         return entry
 
+    @property
+    def num_train_values(self) -> int:
+        return round(len(self.stats) * RandValStats.SELECTION_FRACTION)
+
     @method_cache
     def slowest_n_percent_values(self) -> list[tuple[int, int]]:
-        num_values = round(len(self.stats) * RandValStats.SELECTION_FRACTION)
-        data = list(self.sorted().values())[-num_values:]
+        data = list(self.sorted().values())[-self.num_train_values :]
         return data
 
     def next_train_val(self) -> tuple[int, int]:

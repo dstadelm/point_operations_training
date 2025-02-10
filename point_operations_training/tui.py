@@ -1,8 +1,10 @@
-from random import randint
 from textual.app import App, ComposeResult
 
 # from textual.reactive import reactive
-from textual.widgets import Digits, Header, Footer
+from textual.containers import (
+    Center,
+)
+from textual.widgets import Digits, Header, Footer, Label, ProgressBar
 
 from point_operations_training.training_set import RandValStats
 
@@ -27,22 +29,51 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
     ]
 
     NUM_ASSIGNEMENTS: int = 20
+    NUM_TRAINING: int = 20
 
     assigned: int = 0
+    trained: int = 0
 
     def compose(self) -> ComposeResult:  # pyright: ignore [reportImplicitOverride]
         """Called to add widgets to the app."""
         yield Header()
+
+        with Center():
+            yield Assignement("")
+        with Center():
+            yield ProgressBar(total=20, show_eta=False)
+        with Center():
+            yield Label(id="stats")
+
         yield Footer()
-        yield Assignement("1 x 1", id="center-middle")
 
     def action_new_mult(self) -> None:
         assignement = self.query_one(Assignement)
+        progress: ProgressBar = self.query_one(ProgressBar)
         if self.assigned == LearnArithmetics.NUM_ASSIGNEMENTS:
-            assignement.new_train()
-        else:
+            stats_label: Label = self.query_one("#stats", expect_type=Label)
+            statistics = assignement.stats.statistics()
+            stats_label.update(
+                f"Avg: {statistics['avg']} Max: {statistics['max']} Min:{statistics['min']}"
+            )
+            # _ = vert_group.mount(
+            #     Label(
+            #         f"Avg: {statistics['avg']} Max: {statistics['max']} Min:{statistics['min']}",
+            #         id="stats",
+            #     )
+            # )
+            self.assigned += 1
+            progress.update(total=LearnArithmetics.NUM_TRAINING, progress=0)
+        elif self.assigned < LearnArithmetics.NUM_ASSIGNEMENTS:
             assignement.new_mult()
             self.assigned += 1
+            progress.advance(1)
+        elif self.trained < LearnArithmetics.NUM_TRAINING:
+            assignement.new_train()
+            progress.advance(1)
+            self.trained += 1
+        else:
+            pass
 
 
 if __name__ == "__main__":

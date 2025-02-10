@@ -1,10 +1,7 @@
-#center-middle {
-  align: center middle;
-}
 Assignement {
   background: $boost;
   margin: 1;
   padding: 1;
-  height: 100%;
+  width: 40;
   text-align: center;
 }
