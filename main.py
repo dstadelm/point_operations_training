@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from point_operations_training.training import main
+from point_operations_training.tui import LearnArithmetics
 
 
 if __name__ == "__main__":
-    main()
+    app = LearnArithmetics()
+    _ = app.run()  # pyright: ignore [reportUnknownVariableType]
