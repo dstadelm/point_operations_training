@@ -1,7 +1,10 @@
+Screen{
+  overflow: hidden hidden;
+}
+
 Assignement {
   background: $boost;
   margin: 1;
-  padding: 1;
   width: 40;
   text-align: center;
 }
@@ -10,9 +13,38 @@ ProgressBar {
 }
 #stats {
   margin: 1;
-  padding: 1;
+}
+#start {
+  margin: 1;
 }
 
 Container {
-  max-height: 60%;
+  max-height: 50%;
+  max-width: 60%;
+}
+
+QuitScreen {
+    align: center middle;
+}
+
+#dialog {
+    grid-size: 2;
+    grid-gutter: 1 2;
+    grid-rows: 1fr 3;
+    padding: 0 1;
+    width: 60;
+    height: 11;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+#question {
+    column-span: 2;
+    height: 1fr;
+    width: 1fr;
+    content-align: center middle;
+}
+
+Button {
+    width: 100%;
 }

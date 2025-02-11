@@ -1,11 +1,14 @@
 from textual.app import App, ComposeResult
+from textual.screen import Screen
 
 # from textual.reactive import reactive
 from textual.containers import (
     Center,
     Container,
+    Grid,
 )
-from textual.widgets import Digits, Header, Footer, Label, ProgressBar
+from textual.screen import Screen
+from textual.widgets import Button, Digits, Header, Footer, Label, ProgressBar
 from textual_plotext import PlotextPlot
 
 from point_operations_training.training_set import RandValStats
@@ -43,11 +46,30 @@ class StatPlot(PlotextPlot):
         self.plt.title("Progress Plot")  # to apply a title
 
 
+class QuitScreen(Screen):  # pyright: ignore [reportMissingTypeArgument]
+    """Screen with a dialog to quit."""
+
+    def compose(self) -> ComposeResult:
+        yield Grid(
+            Label("Are you sure you want to quit?", id="question"),
+            Button("Quit", variant="error", id="quit"),
+            Button("Cancel", variant="primary", id="cancel"),
+            id="dialog",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "quit":
+            self.app.exit()
+        else:
+            self.app.pop_screen()
+
+
 class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
     CSS_PATH = "learn.tcss"  # pyright: ignore [reportUnannotatedClassAttribute]
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
         ("enter", "new_mult", "Next"),
         ("d", "toggle_dark", "Toggle dark mode"),
+        ("q", "request_quit", "Quit"),
     ]
 
     NUM_ASSIGNEMENTS: int = 20
@@ -60,6 +82,8 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
         """Called to add widgets to the app."""
         yield Header()
 
+        with Center():
+            yield Label("Press ENTER to start!", id="start")
         with Center():
             yield Assignement("")
         with Center():
@@ -77,6 +101,8 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
         progress: ProgressBar = self.query_one(ProgressBar)
 
         if self.assigned < LearnArithmetics.NUM_ASSIGNEMENTS:
+            start_label: Label = self.query_one("#start", expect_type=Label)
+            start_label.update("")
             assignement.new_mult()
             self.assigned += 1
             progress.advance(1)
@@ -104,6 +130,9 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
         self.theme = (
             "textual-dark" if self.theme == "textual-light" else "textual-light"
         )
+
+    def action_request_quit(self) -> None:
+        self.push_screen(QuitScreen())
 
 
 if __name__ == "__main__":
