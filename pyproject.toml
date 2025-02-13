@@ -1,18 +1,12 @@
-[tool.poetry]
-name = "point_operations_training"
+[project]
+name = "point-operations-training"
 version = "0.1.0"
-description = ""
-authors = ["David Stadelmann <david.stadelmann@scs.ch>"]
+description = "Fun project to help kids to learn multiplication"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.10"
-numpy = "^2.2.2"
-matplotlib = "^3.10.0"
-textual = "^1.0.0"
-textual-plotext = "^1.0.1"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.13"
+dependencies = [
+    "matplotlib>=3.10.0",
+    "numpy>=2.2.2",
+    "textual>=1.0.0",
+    "textual-plotext>=1.0.1",
+]

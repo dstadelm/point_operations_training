@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#! /usr/bin/env -S uv run --no-project --with numpy --with textual --with textual-plotext --python 3.13 python
 from point_operations_training.tui import LearnArithmetics
 
 

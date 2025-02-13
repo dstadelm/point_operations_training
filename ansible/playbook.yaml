@@ -3,9 +3,7 @@
   roles:
     - role: distupgrade
     - role: bash
-    - role: direnv
-    - role: python
-    - role: poetry
+    - role: uv
     - role: launcher
   tasks:
     - name: Install System Packages

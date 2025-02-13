@@ -1,0 +1,18 @@
+- name: Check if uv is installed
+  become: false
+  ansible.builtin.stat:
+    path: ~/.local/bin/uv
+  register: uv_installed
+- name: Download uv installer
+  become: false
+  when: uv_installed.stat.exists == False
+  ansible.builtin.get_url:
+    url: https://astral.sh/uv/install.sh
+    dest: /tmp/uv_install.sh
+- name: Install uv
+  become: false
+  when: uv_installed.stat.exists == False
+  ansible.builtin.shell: sh /tmp/uv_install.sh
+- name: Update uv
+  become: false
+  ansible.builtin.shell: ~/.local/bin/uv self update

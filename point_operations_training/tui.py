@@ -1,3 +1,4 @@
+from typing import override
 from textual.app import App, ComposeResult
 from textual.screen import Screen
 
@@ -7,7 +8,6 @@ from textual.containers import (
     Container,
     Grid,
 )
-from textual.screen import Screen
 from textual.widgets import Button, Digits, Header, Footer, Label, ProgressBar
 from textual_plotext import PlotextPlot
 
@@ -33,6 +33,7 @@ class StatPlot(PlotextPlot):
         self.data: dict[str, list[dict[str, str | float]]] = data
         super().__init__()
 
+    @override
     def on_mount(self) -> None:
         # date_series = [val["date"] for val in self.data["stats"]]
         avg_series = [val["avg"] for val in self.data["stats"]]
@@ -49,6 +50,7 @@ class StatPlot(PlotextPlot):
 class QuitScreen(Screen):  # pyright: ignore [reportMissingTypeArgument]
     """Screen with a dialog to quit."""
 
+    @override
     def compose(self) -> ComposeResult:
         yield Grid(
             Label("Are you sure you want to quit?", id="question"),
@@ -61,7 +63,7 @@ class QuitScreen(Screen):  # pyright: ignore [reportMissingTypeArgument]
         if event.button.id == "quit":
             self.app.exit()
         else:
-            self.app.pop_screen()
+            _ = self.app.pop_screen()
 
 
 class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
@@ -125,6 +127,7 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
             container = self.query_one(Container)
             _ = container.mount(StatPlot(assignement.stats.load_stats()))
 
+    @override
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
         self.theme = (
@@ -132,7 +135,7 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
         )
 
     def action_request_quit(self) -> None:
-        self.push_screen(QuitScreen())
+        _ = self.push_screen(QuitScreen())
 
 
 if __name__ == "__main__":
