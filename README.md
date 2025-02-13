@@ -6,13 +6,13 @@
 
 # How it works
 
-First 20 random multiplications are provided. The children do not have to type the answer they shall speak it out loud. Parents shall oversee the process and check if the result is correct. Hitting **ENTER** brings up the next assignement. For each assignment the time is measured. After completing th 20 multiplications the worst 20% are selcted and the student will have to repeate them totaling in another 20 multiplications.
+First 20 random multiplications are provided. The children do not have to type the answer they shall speak it out loud. Parents shall oversee the process and check if the result is correct. Hitting **ENTER** brings up the next assignement. For each assignment the time is measured. After completing the 20 multiplications the worst 20% are selcted and the student will have to repeate them totaling in another 20 multiplications.
 
 The average, maximum and minimum time for the 20 random multiplications is stored and a trend line is plotted.
 
 # Installation
 
-The program is desiged to work on Linux and not tested on any other OS
+The program is designed to work on Linux and not tested on any other OS
 
 ## Basic
 Install uv on your system and run main.py from the root of the repository
