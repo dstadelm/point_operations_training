@@ -6,29 +6,33 @@
 
 # How it works
 
-First 20 random multiplications are provided. The children do not have to type the answer they shall speak it out loud. Parents shall oversee the process and check if the result is correct. Hitting **ENTER** brings up the next assignement. For each assignment the time is measured. After completing the 20 multiplications the worst 20% are selcted and the student will have to repeate them totaling in another 20 multiplications.
+First 20 random multiplications are provided. The children do not have to type
+the answer they shall speak it out loud. Parents shall oversee the process and
+check if the result is correct. Hitting **ENTER** brings up the next
+assignment. For each assignment the time is measured. After completing the 20
+multiplications the worst 20% are selected and the student will have to repeat
+them totaling in another 20 multiplications.
 
-The average, maximum and minimum time for the 20 random multiplications is stored and a trend line is plotted.
+The average, maximum and minimum time for the 20 random multiplications is
+stored and a trend line is plotted.
 
 # Installation
 
 The program is designed to work on Linux and not tested on any other OS
 
-## Basic
-Install uv on your system and run main.py from the root of the repository
+## Basic Install uv on your system and run main.py from the root of the
+repository
 
-## Ansible
-The ansible script is designed for Ubuntu/Gnome based systems 
+## Ansible 
+
+The ansible script is designed for Ubuntu/Gnome based systems.
+
 The ansible script 
-- installes uv
-- creates a wrapper script that is stored under ~/.local/bin/point_operations_training.sh
+- installs uv
+- creates a wrapper script that is stored under
+~/.local/bin/point_operations_training.sh
 - a desktop file under ~/.local/share/applications
 
-<!--
-# Requirements
-tkinter is required for matplot 
-```
-sudo apt install python3-tk
-```
--->
+<!-- # Requirements tkinter is required for matplot ``` sudo apt install
+python3-tk ``` -->
 
