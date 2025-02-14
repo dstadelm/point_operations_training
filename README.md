@@ -20,7 +20,9 @@ stored and a trend line is plotted.
 
 The program is designed to work on Linux and not tested on any other OS
 
-## Basic Install uv on your system and run main.py from the root of the
+## Basic 
+
+Install uv on your system and run main.py from the root of the
 repository
 
 ## Ansible 
