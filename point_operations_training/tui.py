@@ -1,14 +1,11 @@
 from typing import override
+
 from textual.app import App, ComposeResult
-from textual.screen import Screen
 
 # from textual.reactive import reactive
-from textual.containers import (
-    Center,
-    Container,
-    Grid,
-)
-from textual.widgets import Button, Digits, Header, Footer, Label, ProgressBar
+from textual.containers import Center, Container, Grid
+from textual.screen import Screen
+from textual.widgets import Button, Digits, Footer, Header, Label, ProgressBar
 from textual_plotext import PlotextPlot
 
 from point_operations_training.training_set import RandValStats
@@ -19,6 +16,7 @@ class Assignement(Digits):
     stats: RandValStats = RandValStats()
 
     def new_mult(self):
+        self.stats.done()
         x, y = self.stats.next()
         self.update(f"{x} x {y}")
 
@@ -110,7 +108,7 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
             progress.advance(1)
         elif self.assigned == LearnArithmetics.NUM_ASSIGNEMENTS:
             stats_label: Label = self.query_one("#stats", expect_type=Label)
-            statistics = assignement.stats.statistics()
+            statistics = assignement.stats.session_stats()
             stats_label.update(
                 f"Avg: {statistics['avg']} Max: {statistics['max']} Min:{statistics['min']}"
             )
@@ -125,7 +123,7 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
             stats_label = self.query_one("#stats", expect_type=Label)
             stats_label.update("Done")
             container = self.query_one(Container)
-            _ = container.mount(StatPlot(assignement.stats.load_stats()))
+            _ = container.mount(StatPlot(assignement.stats.load_db()))
 
     @override
     def action_toggle_dark(self) -> None:
