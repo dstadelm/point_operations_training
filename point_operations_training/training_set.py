@@ -1,6 +1,5 @@
 import json
 from collections.abc import Generator
-from copy import copy
 from datetime import datetime
 from pathlib import Path
 from random import randint
@@ -10,34 +9,72 @@ from point_operations_training.timer import Timer
 
 
 class Assignment(Protocol):
-    solve_time: float
-    assignment: tuple[int, int]
 
-    def new(self) -> tuple[int, int]: ...
+    def start(self) -> None: ...
 
-    def done(self) -> None: ...
+    def stop(self) -> None: ...
+
+    @property
+    def modus_operandi(self) -> str: ...
+
+    @property
+    def assignment(self) -> tuple[int, int]: ...
+
+    @property
+    def solve_time(self) -> float: ...
+
+    @override
+    def __str__(self) -> str: ...
 
 
 class MultiplicationAssignment:
     def __init__(self) -> None:
-        self.solve_time: float = 0
-        self.assignment: tuple[int, int] = (randint(1, 9), randint(1, 9))
+        self._solve_time: float = 0
+        self._assignment: tuple[int, int] = (randint(1, 9), randint(1, 9))
         self.timer: Timer = Timer(name="assignment")
 
-    def start(self) -> tuple[int, int]:
+    def start(self) -> None:
         self.timer.start()
-        return self.assignment
 
     def stop(self) -> None:
-        if self.solve_time == 0:
-            self.solve_time = self.timer.duration()
+        if self._solve_time == 0:
+            self.timer.stop()
+
+    def __init__(self, assignment_cls: type[Assignment]) -> None:
+        super().__init__()
+        self.session: Session = Session(assignment_cls)
 
     def to_dict(self) -> dict[float, tuple[int, int]]:
-        return {self.solve_time: self.assignment}
+        return {self._solve_time: self._assignment}
 
     def from_dict(self, data: dict[float, tuple[int, int]]) -> None:
-        self.solve_time = list(data.keys())[0]
-        self.assignment = list(data.values())[0]
+        self._solve_time = list(data.keys())[0]
+        self._assignment = list(data.values())[0]
+
+    @property
+    def modus_operandi(self) -> str:
+        return "x"
+
+    @property
+    def assignment(self) -> tuple[int, int]:
+        return self._assignment
+
+    @property
+    def solve_time(self) -> float:
+        return self._solve_time
+
+    @override
+    def __str__(self) -> str:
+        return f"{self._assignment[0]} x {self._assignment[1]}"
+
+
+class AssignmentFactory(Protocol):
+    def __call__(self) -> Assignment: ...
+
+
+class MultiplicationAssignmentFactory:
+    def __call__(self) -> Assignment:
+        return MultiplicationAssignment()
 
 
 class AssignmentCollection:
@@ -56,12 +93,9 @@ class AssignmentCollection:
     def min_time(self) -> float:
         return min([r.solve_time for r in self.assignments])
 
-    def slowest_assignments(self, percentage: float) -> list[tuple[int, int]]:
-        num = round(len(self.assignments) * percentage)
-        return [
-            r.assignment
-            for r in sorted(self.assignments, key=lambda r: r.solve_time)[-num:]
-        ]
+    def slowest_assignments(self, percentage: int) -> list[Assignment]:
+        num = round(len(self.assignments) * percentage / 100)
+        return sorted(self.assignments, key=lambda r: r.solve_time)[-num:]
 
     @override
     def __str__(self) -> str:
@@ -69,21 +103,19 @@ class AssignmentCollection:
 
 
 class Session:
-    def __init__(self, assignement_cls: type[Assignment]) -> None:
-        self.assignement_cls: type[Assignment] = assignement_cls
+    def __init__(self, assignement_factory: AssignmentFactory) -> None:
+        self.assignment_factory: AssignmentFactory = assignement_factory
         self.date: str = str(datetime.now())
         self.assignments: AssignmentCollection = AssignmentCollection()
-        self.assignment: Assignment = (
-            None  # pyright: ignore [reportAttributeAccessIssue]
-        )
+        self._slowest_assignments: list[Assignment] = []
+        self.prev_idx: int = -1
+        self.training_percentage: int = 20
 
-    def get_assignment(self) -> tuple[int, int]:
-        self.assignment = self.assignement_cls()
-        return self.assignment.assignment
+    def get_new_assignment(self) -> Assignment:
+        return self.assignment_factory()
 
-    def assignment_done(self) -> None:
-        self.assignment.done()
-        self.assignments.add_assignment(copy(self.assignment))
+    def add_done_assignment(self, assignment: Assignment) -> None:
+        self.assignments.add_assignment(assignment)
 
     def avg_time(self) -> float:
         return self.assignments.avg_time()
@@ -94,8 +126,20 @@ class Session:
     def min_time(self) -> float:
         return self.assignments.min_time()
 
-    def slowest_assignments(self, percentage: float) -> list[tuple[int, int]]:
-        return self.assignments.slowest_assignments(percentage)
+    def slowest_assignments(self, percentage: int) -> list[Assignment]:
+        if not self._slowest_assignments:
+            self._slowest_assignments = self.assignments.slowest_assignments(percentage)
+        return self._slowest_assignments
+
+    def get_next_train_assignement(self) -> Assignment:
+        idx = randint(0, len(self.slowest_assignments(self.training_percentage)) - 1)
+        while idx == self.prev_idx:
+            idx = randint(
+                0, len(self.slowest_assignments(self.training_percentage)) - 1
+            )
+
+        self.prev_idx = idx
+        return self.slowest_assignments(self.training_percentage)[idx]
 
     def __iter__(self) -> Generator[Assignment, None, None]:
         for assignment in self.assignments.assignments:
@@ -238,6 +282,9 @@ class UserCollection:
     def get_users(self) -> list[str]:
         return [u.name for u in self.users]
 
+    def add_user(self, user: User) -> None:
+        self.users.append(user)
+
     def get_user(self, name: str) -> User:
         for user in self.users:
             if user.name == name:
@@ -261,9 +308,9 @@ class DataBase:
 
         return self.data
 
-    def save_db(self, data: dict[str, list[dict[str, str | float]]]) -> None:
+    def save_db(self, data: UserCollection) -> None:
         with open(self.file, "w") as stats:
-            json.dump(data, stats)
+            json.dump(data.to_dict(), stats)
 
     def get_user_collection(self) -> UserCollection:
         data: UserCollectionType = self.get_db()

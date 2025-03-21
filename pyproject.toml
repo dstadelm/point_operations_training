@@ -8,5 +8,6 @@ dependencies = [
     "matplotlib>=3.10.0",
     "numpy>=2.2.2",
     "textual>=1.0.0",
+    "textual-dev>=1.7.0",
     "textual-plotext>=1.0.1",
 ]
