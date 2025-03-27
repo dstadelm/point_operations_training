@@ -5,30 +5,41 @@ from textual.app import App, ComposeResult
 
 # from textual.reactive import reactive
 from textual.containers import Center, Container, Grid
+from textual.reactive import reactive
 from textual.screen import Screen
+from textual.widget import Widget
 from textual.widgets import Button, Digits, Footer, Header, Label, ProgressBar
-from textual_plotext import PlotextPlot
 
+from point_operations_training.create_new_user_screen import CreateNewUser
 from point_operations_training.training_set import (
     Assignment,
     AssignmentFactory,
     DataBase,
     MultiplicationAssignmentFactory,
+    Result,
     Session,
+    User,
     UserCollection,
+    result_from_session,
 )
 from point_operations_training.user_selection_screen import UserSelectionScreen
 
+# from textual_plotext import PlotextPlot
 
-class TextualAssignment(Digits):
 
-    def __init__(self, assignment_factory: AssignmentFactory) -> None:
+class TextualSession(Digits):
+
+    def __init__(self) -> None:
         super().__init__()
-        self.session: Session = Session(assignment_factory)
+        self.session: Session = Session(MultiplicationAssignmentFactory())
         self.assignment: Assignment | None = None
+
+    def set_session(self, session: Session):
+        self.session = session
 
     def new_assignement(self):
         if self.assignment:
+            self.assignment.stop()
             self.session.add_done_assignment(self.assignment)
         self.assignment = self.session.get_new_assignment()
         self.assignment.start()
@@ -38,25 +49,34 @@ class TextualAssignment(Digits):
         assignement = self.session.get_next_train_assignement()
         self.update(f"{assignement}")
 
+    def max_time(self) -> float:
+        return self.session.assignments.max_time()
 
-class StatPlot(PlotextPlot):
+    def min_time(self) -> float:
+        return self.session.assignments.min_time()
 
-    def __init__(self, data: dict[str, list[dict[str, str | float]]]) -> None:
-        self.data: dict[str, list[dict[str, str | float]]] = data
-        super().__init__()
+    def avg_time(self) -> float:
+        return self.session.assignments.avg_time()
 
-    @override
-    def on_mount(self) -> None:
-        # date_series = [val["date"] for val in self.data["stats"]]
-        avg_series = [val["avg"] for val in self.data["stats"]]
-        max_series = [val["max"] for val in self.data["stats"]]
-        min_series = [val["min"] for val in self.data["stats"]]
 
-        self.plt.plot(avg_series, label="Average")
-        self.plt.plot(max_series, label="Maximum")
-        self.plt.plot(min_series, label="Minimim")
-
-        self.plt.title("Progress Plot")  # to apply a title
+# class StatPlot(PlotextPlot):
+#
+#     def __init__(self, data: dict[str, list[dict[str, str | float]]]) -> None:
+#         self.data: dict[str, list[dict[str, str | float]]] = data
+#         super().__init__()
+#
+#     @override
+#     def on_mount(self) -> None:
+#         # date_series = [val["date"] for val in self.data["stats"]]
+#         avg_series = [val["avg"] for val in self.data["stats"]]
+#         max_series = [val["max"] for val in self.data["stats"]]
+#         min_series = [val["min"] for val in self.data["stats"]]
+#
+#         self.plt.plot(avg_series, label="Average")
+#         self.plt.plot(max_series, label="Maximum")
+#         self.plt.plot(min_series, label="Minimim")
+#
+#         self.plt.title("Progress Plot")  # to apply a title
 
 
 class QuitScreen(Screen):  # pyright: ignore [reportMissingTypeArgument]
@@ -97,6 +117,9 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
         self.db_path: Path = Path("db.json")
         self.db: DataBase = DataBase(self.db_path)
         self.user_collection: UserCollection = self.db.get_user_collection()
+        self.user_name: str = ""
+        self.session: Session = Session(MultiplicationAssignmentFactory())
+        self.modus_operandi: str = "*"
 
     def compose(self) -> ComposeResult:  # pyright: ignore [reportImplicitOverride]
         """Called to add widgets to the app."""
@@ -105,7 +128,7 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
         with Center():
             yield Label("Press ENTER to start!", id="start")
         with Center():
-            yield TextualAssignment(MultiplicationAssignmentFactory())
+            yield TextualSession()
         with Center():
             yield ProgressBar(total=20, show_eta=False)
         with Center():
@@ -117,25 +140,34 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
         yield Footer()
 
     def action_new_mult(self) -> None:
-        assignement = self.query_one(TextualAssignment)
+        session = self.query_one(TextualSession)
         progress: ProgressBar = self.query_one(ProgressBar)
 
         if self.assigned < LearnArithmetics.NUM_ASSIGNMENTS:
             start_label: Label = self.query_one("#start", expect_type=Label)
             start_label.update("")
-            assignement.new_assignement()
+            session.new_assignement()
             self.assigned += 1
             progress.advance(1)
         elif self.assigned == LearnArithmetics.NUM_ASSIGNMENTS:
             stats_label: Label = self.query_one("#stats", expect_type=Label)
-            max = assignement.session.max_time()
-            min = assignement.session.min_time()
-            avg = assignement.session.avg_time()
-            stats_label.update(f"Avg: {avg:f.2} Max: {max:f.2} Min:{min:f.2}")
+            max = session.max_time()
+            min = session.min_time()
+            avg = session.avg_time()
+            stats_label.update(f"Avg: {avg:.2f} Max: {max:.2f} Min:{min:.2f}")
+            result = result_from_session(self.session)
+            user = self.user_collection.get_user(self.user_name)
+            if user:
+                user.add_result(self.modus_operandi, result)
+                user.get_max_matrix(self.modus_operandi).update(self.session)
+            else:
+                raise ValueError(f"User {self.user_name} not found")
+
+            self.db.save_db(self.user_collection)
             self.assigned += 1
             progress.update(total=LearnArithmetics.NUM_TRAINING, progress=0)
         elif self.trained < LearnArithmetics.NUM_TRAINING:
-            assignement.new_train()
+            session.new_train()
             progress.advance(1)
             self.trained += 1
         elif self.trained == LearnArithmetics.NUM_TRAINING:
@@ -156,7 +188,31 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
         _ = self.push_screen(QuitScreen())
 
     def on_mount(self):
-        _ = self.push_screen(UserSelectionScreen(["user1", "user2"]))
+        textual_session = self.query_one(TextualSession)
+        textual_session.set_session(self.session)
+        users = [user.name for user in self.user_collection.users]
+
+        def set_user(value: str | None):
+            if value:
+                if value == "<create new user>":
+                    _ = self.push_screen(CreateNewUser(users), callback=set_user)
+                    return
+                else:
+                    self.user_name = value
+                    if self.user_name not in users:
+                        new_user = User(self.user_name)
+                        self.user_collection.add_user(new_user)
+
+                    self.query_one("#start", expect_type=Label).update(
+                        f"Hello {self.user_name}! Press ENTER to start!"
+                    )
+            else:
+                _ = self.push_screen(CreateNewUser(users), callback=set_user)
+
+        if users:
+            _ = self.push_screen(UserSelectionScreen(users), callback=set_user)
+        else:
+            _ = self.push_screen(CreateNewUser(users), callback=set_user)
 
 
 if __name__ == "__main__":

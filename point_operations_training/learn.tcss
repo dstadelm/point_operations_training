@@ -2,7 +2,7 @@ Screen{
   overflow: hidden hidden;
 }
 
-Assignement {
+TextualSession {
   background: $boost;
   margin: 1;
   width: 40;
@@ -21,6 +21,28 @@ ProgressBar {
 Container {
   max-height: 50%;
   max-width: 60%;
+}
+
+UserSelectionScreen {
+    align: center middle;
+}
+
+CreateNewUser {
+    align: center middle;
+}
+
+#UserSelectionDialog {
+    align: center middle;
+    content-align: center middle;
+    padding: 0 1;
+    width: 60;
+    height: 11;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+#create-new-user-button {
+  width: 50%;
 }
 
 QuitScreen {
