@@ -64,6 +64,91 @@ class MultiplicationAssignment:
         return f"{self._assignment[0]} x {self._assignment[1]}"
 
 
+class TensMultiplicationAssignment:
+    def __init__(self) -> None:
+        self._solve_time: float = 0
+        a: int = randint(0, 1)
+        b: int = 1 - a
+        self._assignment: tuple[int, int] = (
+            10**a * randint(1, 9),
+            10**b * randint(1, 9),
+        )
+        self.timer: Timer = Timer(name="assignment")
+
+    def start(self) -> None:
+        self.timer.start()
+
+    def stop(self) -> None:
+        if self._solve_time == 0:
+            self.timer.stop()
+
+    def to_dict(self) -> dict[float, tuple[int, int]]:
+        return {self._solve_time: self._assignment}
+
+    def from_dict(self, data: dict[float, tuple[int, int]]) -> None:
+        self._solve_time = list(data.keys())[0]
+        self._assignment = list(data.values())[0]
+
+    @property
+    def modus_operandi(self) -> str:
+        return "10x"
+
+    @property
+    def assignment(self) -> tuple[int, int]:
+        return self._assignment
+
+    @property
+    def solve_time(self) -> float:
+        return self.timer.duration()
+
+    @override
+    def __str__(self) -> str:
+        return f"{self._assignment[0]} x {self._assignment[1]}"
+
+
+class DivisionAssignment:
+    def __init__(self) -> None:
+        self._solve_time: float = 0
+        b = randint(1, 9)
+        c = randint(1, 9)
+        a = b * c
+        self._assignment: tuple[int, int] = (
+            a,
+            b,
+        )
+        self.timer: Timer = Timer(name="assignment")
+
+    def start(self) -> None:
+        self.timer.start()
+
+    def stop(self) -> None:
+        if self._solve_time == 0:
+            self.timer.stop()
+
+    def to_dict(self) -> dict[float, tuple[int, int]]:
+        return {self._solve_time: self._assignment}
+
+    def from_dict(self, data: dict[float, tuple[int, int]]) -> None:
+        self._solve_time = list(data.keys())[0]
+        self._assignment = list(data.values())[0]
+
+    @property
+    def modus_operandi(self) -> str:
+        return ":"
+
+    @property
+    def assignment(self) -> tuple[int, int]:
+        return self._assignment
+
+    @property
+    def solve_time(self) -> float:
+        return self.timer.duration()
+
+    @override
+    def __str__(self) -> str:
+        return f"{self._assignment[0]} : {self._assignment[1]}"
+
+
 class AssignmentFactory(Protocol):
     def __call__(self) -> Assignment: ...
 
@@ -71,6 +156,16 @@ class AssignmentFactory(Protocol):
 class MultiplicationAssignmentFactory:
     def __call__(self) -> Assignment:
         return MultiplicationAssignment()
+
+
+class TensMultiplicationAssignmentFactory:
+    def __call__(self) -> Assignment:
+        return TensMultiplicationAssignment()
+
+
+class DivisionAssignmentFactory:
+    def __call__(self) -> Assignment:
+        return DivisionAssignment()
 
 
 class AssignmentCollection:
@@ -173,15 +268,15 @@ class ResultCollection:
     def sort_by_date(self) -> None:
         self.results.sort(key=lambda r: r.date)
 
-    def get_avg_series(self) -> list[float]:
+    def avg_series(self) -> list[float]:
         self.sort_by_date()
         return [r.avg for r in self.results]
 
-    def get_max_series(self) -> list[float]:
+    def max_series(self) -> list[float]:
         self.sort_by_date()
         return [r.max for r in self.results]
 
-    def get_min_series(self) -> list[float]:
+    def min_series(self) -> list[float]:
         self.sort_by_date()
         return [r.min for r in self.results]
 
@@ -257,17 +352,20 @@ class User:
     def get_max_matrix(self, modus_operandi: str) -> MaxMatrix:
         return self.max_matrices.setdefault(modus_operandi, MaxMatrix())
 
-    def get_avg_series(self, modus_operandi: str) -> list[float]:
-        return self.results[modus_operandi].get_avg_series()
+    def avg_series(self, modus_operandi: str) -> list[float]:
+        return self.results[modus_operandi].avg_series()
 
-    def get_max_series(self, modus_operandi: str) -> list[float]:
-        return self.results[modus_operandi].get_max_series()
+    def max_series(self, modus_operandi: str) -> list[float]:
+        return self.results[modus_operandi].max_series()
 
-    def get_min_series(self, modus_operandi: str) -> list[float]:
-        return self.results[modus_operandi].get_min_series()
+    def min_series(self, modus_operandi: str) -> list[float]:
+        return self.results[modus_operandi].min_series()
 
     def add_result(self, modus_operandi: str, result: Result) -> None:
         self.results.setdefault(modus_operandi, ResultCollection()).add_result(result)
+
+    def get_results(self, modus_operandi: str) -> ResultCollection:
+        return self.results[modus_operandi]
 
     def from_dict(
         self,
@@ -298,25 +396,34 @@ class User:
         return data
 
 
-UserCollectionType = dict[str, UserType]
+UserCollectionType = dict[str, dict[str, UserType] | str]
 
 
 class UserCollection:
     def __init__(self) -> None:
         self.users: list[User] = []
+        self.last_user: str = ""
 
     def to_dict(self) -> UserCollectionType:
-        data: UserCollectionType = {}
+        data: UserCollectionType = {"last_user": self.last_user, "users": {}}
+        user_data = {}
         for user in self.users:
-            data[user.name] = user.to_dict()
+            user_data[user.name] = user.to_dict()
+        data["users"] = user_data
 
         return data
 
     def from_dict(self, data: UserCollectionType) -> None:
-        for name, value in data.items():
+        users: dict[str, UserType] = data.setdefault(
+            "users", {}
+        )  # pyright: ignore [reportAssignmentType]
+        for name, value in users.items():
             user = User(name)
             user.from_dict(value)
             self.users.append(user)
+        self.last_user = data.get(
+            "last_user", ""
+        )  # pyright: ignore [reportAttributeAccessIssue]
 
     def get_users(self) -> list[str]:
         return [u.name for u in self.users]
@@ -330,12 +437,15 @@ class UserCollection:
                 return user
 
 
+DataBaseType = dict[str, UserCollectionType | str]
+
+
 class DataBase:
     def __init__(self, file: Path) -> None:
         self.file: Path = file
-        self.data: UserCollectionType = {}
+        self.data: DataBaseType = {}
 
-    def get_db(self) -> UserCollectionType:
+    def get_db(self) -> DataBaseType:
         if not self.data:
             if self.file.is_file():
                 with open(self.file) as stats:
@@ -348,7 +458,7 @@ class DataBase:
             json.dump(data.to_dict(), stats)
 
     def get_user_collection(self) -> UserCollection:
-        data: UserCollectionType = self.get_db()
+        data = self.get_db()
         users = UserCollection()
-        users.from_dict(data)
+        users.from_dict(data)  # pyright: ignore [reportArgumentType]
         return users

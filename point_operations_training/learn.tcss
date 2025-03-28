@@ -27,6 +27,10 @@ UserSelectionScreen {
     align: center middle;
 }
 
+SelectModiOperandi {
+    align: center middle;
+}
+
 CreateNewUser {
     align: center middle;
 }

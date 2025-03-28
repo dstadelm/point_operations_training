@@ -5,26 +5,24 @@ from textual.app import App, ComposeResult
 
 # from textual.reactive import reactive
 from textual.containers import Center, Container, Grid
-from textual.reactive import reactive
 from textual.screen import Screen
-from textual.widget import Widget
 from textual.widgets import Button, Digits, Footer, Header, Label, ProgressBar
+from textual_plotext import PlotextPlot
 
 from point_operations_training.create_new_user_screen import CreateNewUser
+from point_operations_training.select_modi_operandi import SelectModiOperandi
 from point_operations_training.training_set import (
     Assignment,
     AssignmentFactory,
     DataBase,
     MultiplicationAssignmentFactory,
-    Result,
+    ResultCollection,
     Session,
     User,
     UserCollection,
     result_from_session,
 )
 from point_operations_training.user_selection_screen import UserSelectionScreen
-
-# from textual_plotext import PlotextPlot
 
 
 class TextualSession(Digits):
@@ -35,7 +33,9 @@ class TextualSession(Digits):
         self.assignment: Assignment | None = None
 
     def set_session(self, session: Session):
+        self.assignment = None
         self.session = session
+        self.update("")
 
     def new_assignement(self):
         if self.assignment:
@@ -59,24 +59,24 @@ class TextualSession(Digits):
         return self.session.assignments.avg_time()
 
 
-# class StatPlot(PlotextPlot):
-#
-#     def __init__(self, data: dict[str, list[dict[str, str | float]]]) -> None:
-#         self.data: dict[str, list[dict[str, str | float]]] = data
-#         super().__init__()
-#
-#     @override
-#     def on_mount(self) -> None:
-#         # date_series = [val["date"] for val in self.data["stats"]]
-#         avg_series = [val["avg"] for val in self.data["stats"]]
-#         max_series = [val["max"] for val in self.data["stats"]]
-#         min_series = [val["min"] for val in self.data["stats"]]
-#
-#         self.plt.plot(avg_series, label="Average")
-#         self.plt.plot(max_series, label="Maximum")
-#         self.plt.plot(min_series, label="Minimim")
-#
-#         self.plt.title("Progress Plot")  # to apply a title
+class StatPlot(PlotextPlot):
+
+    def __init__(self, results: ResultCollection) -> None:
+        self.results: ResultCollection = results
+        super().__init__()
+
+    @override
+    def on_mount(self) -> None:
+        # date_series = [val["date"] for val in self.data["stats"]]
+        avg_series = self.results.avg_series()
+        max_series = self.results.max_series()
+        min_series = self.results.min_series()
+
+        self.plt.plot(avg_series, label="Average")
+        self.plt.plot(max_series, label="Maximum")
+        self.plt.plot(min_series, label="Minimim")
+
+        self.plt.title("Progress Plot")  # to apply a title
 
 
 class QuitScreen(Screen):  # pyright: ignore [reportMissingTypeArgument]
@@ -102,6 +102,8 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
     CSS_PATH = "learn.tcss"  # pyright: ignore [reportUnannotatedClassAttribute]
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
         ("enter", "new_mult", "Next"),
+        ("u", "select_user", "Select user"),
+        ("o", "select_modi_operandi", "Select operation"),
         ("d", "toggle_dark", "Toggle dark mode"),
         ("q", "request_quit", "Quit"),
     ]
@@ -156,6 +158,7 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
             avg = session.avg_time()
             stats_label.update(f"Avg: {avg:.2f} Max: {max:.2f} Min:{min:.2f}")
             result = result_from_session(self.session)
+            self.user_collection.last_user = self.user_name
             user = self.user_collection.get_user(self.user_name)
             if user:
                 user.add_result(self.modus_operandi, result)
@@ -175,7 +178,9 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
             stats_label = self.query_one("#stats", expect_type=Label)
             stats_label.update("Done")
             container = self.query_one(Container)
-            # _ = container.mount(StatPlot(assignement.stats.load_db()))
+            user = self.user_collection.get_user(self.user_name)
+            if user:
+                _ = container.mount(StatPlot(user.get_results(self.modus_operandi)))
 
     @override
     def action_toggle_dark(self) -> None:
@@ -190,29 +195,53 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
     def on_mount(self):
         textual_session = self.query_one(TextualSession)
         textual_session.set_session(self.session)
+        self.user_name = self.user_collection.last_user
+        if not self.user_name:
+            self.action_select_user()
+        else:
+            self.query_one("#start", expect_type=Label).update(
+                f"Hello {self.user_name}! Press ENTER to start!"
+            )
+
+    def action_select_user(self) -> None:
         users = [user.name for user in self.user_collection.users]
 
         def set_user(value: str | None):
             if value:
-                if value == "<create new user>":
-                    _ = self.push_screen(CreateNewUser(users), callback=set_user)
-                    return
-                else:
-                    self.user_name = value
-                    if self.user_name not in users:
-                        new_user = User(self.user_name)
-                        self.user_collection.add_user(new_user)
-
-                    self.query_one("#start", expect_type=Label).update(
-                        f"Hello {self.user_name}! Press ENTER to start!"
-                    )
+                self.user_name = value
+                if self.user_name not in users:
+                    new_user = User(self.user_name)
+                    self.user_collection.add_user(new_user)
             else:
                 _ = self.push_screen(CreateNewUser(users), callback=set_user)
+
+            self.reset()
 
         if users:
             _ = self.push_screen(UserSelectionScreen(users), callback=set_user)
         else:
             _ = self.push_screen(CreateNewUser(users), callback=set_user)
+
+    def action_select_modi_operandi(self) -> None:
+        def set_modi_operandi(factory: AssignmentFactory | None):
+            if factory:
+                self.session = Session(factory)
+                self.modus_operandi = factory().modus_operandi
+                self.reset()
+            else:
+                _ = self.push_screen(SelectModiOperandi(), callback=set_modi_operandi)
+
+        _ = self.push_screen(SelectModiOperandi(), callback=set_modi_operandi)
+
+    def reset(self):
+        self.assigned = 0
+        self.trained = 0
+        self.query_one(TextualSession).set_session(self.session)
+        progress: ProgressBar = self.query_one(ProgressBar)
+        progress.update(total=LearnArithmetics.NUM_ASSIGNMENTS, progress=0)
+        self.query_one("#start", expect_type=Label).update(
+            f"Hello {self.user_name}! Press ENTER to start!"
+        )
 
 
 if __name__ == "__main__":
