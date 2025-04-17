@@ -3,14 +3,14 @@ from typing import override
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.screen import ModalScreen
-from textual.widgets import Button, Input
+from textual.widgets import Input
 
 
 class CreateNewUser(ModalScreen[str]):
 
     def __init__(self, users: list[str]) -> None:
         super().__init__()
-        self.users = users
+        self.users: list[str] = users
 
     @override
     def compose(self) -> ComposeResult:

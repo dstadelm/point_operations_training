@@ -9,20 +9,18 @@ from textual.screen import Screen
 from textual.widgets import Button, Digits, Footer, Header, Label, ProgressBar
 from textual_plotext import PlotextPlot
 
-from point_operations_training.create_new_user_screen import CreateNewUser
-from point_operations_training.select_modi_operandi import SelectModiOperandi
-from point_operations_training.training_set import (
+from point_operations_training.model.assignment import (
     Assignment,
     AssignmentFactory,
-    DataBase,
     MultiplicationAssignmentFactory,
-    ResultCollection,
-    Session,
-    User,
-    UserCollection,
-    result_from_session,
 )
-from point_operations_training.user_selection_screen import UserSelectionScreen
+from point_operations_training.model.data_base import DataBase
+from point_operations_training.model.result import ResultCollection, result_from_session
+from point_operations_training.model.session import Session
+from point_operations_training.model.user import User, UserCollection
+from point_operations_training.view.create_new_user_screen import CreateNewUser
+from point_operations_training.view.select_modi_operandi import SelectModiOperandi
+from point_operations_training.view.user_selection_screen import UserSelectionScreen
 
 
 class TextualSession(Digits):
@@ -185,7 +183,7 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
     @override
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
-        self.theme = (
+        self.theme = (  # pyright: ignore [reportUnannotatedClassAttribute]
             "textual-dark" if self.theme == "textual-light" else "textual-light"
         )
 

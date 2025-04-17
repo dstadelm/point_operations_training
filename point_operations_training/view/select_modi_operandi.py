@@ -5,7 +5,7 @@ from textual.containers import Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Label, ListItem, ListView, Static
 
-from point_operations_training.training_set import (
+from point_operations_training.model.assignment import (
     AssignmentFactory,
     DivisionAssignmentFactory,
     MultiplicationAssignmentFactory,
@@ -38,5 +38,5 @@ class SelectModiOperandi(ModalScreen[AssignmentFactory]):
                 _ = self.dismiss(TensMultiplicationAssignmentFactory())
             case "Division":
                 _ = self.dismiss(DivisionAssignmentFactory())
-            # case "Division 10":
-            #     _ = self.dismiss(event.item.name)
+            case _:
+                raise ValueError
