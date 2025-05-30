@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import override
 
@@ -22,6 +23,9 @@ from point_operations_training.view.create_new_user_screen import CreateNewUser
 from point_operations_training.view.select_modi_operandi import SelectModiOperandi
 from point_operations_training.view.user_selection_screen import UserSelectionScreen
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 class TextualSession(Digits):
 
@@ -38,7 +42,12 @@ class TextualSession(Digits):
     def new_assignement(self):
         if self.assignment:
             self.assignment.stop()
+            print(
+                f"Assignment {self.assignment} stopped with time {self.assignment.solve_time:.2f}"
+            )
             self.session.add_done_assignment(self.assignment)
+            for assignment in self.session.assignments.assignments:
+                print(f"Assignment {assignment} with time {assignment.solve_time:.2f}")
         self.assignment = self.session.get_new_assignment()
         self.assignment.start()
         self.update(f"{self.assignment}")

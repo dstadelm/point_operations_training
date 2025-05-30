@@ -7,17 +7,16 @@ from point_operations_training.timer import Timer
 
 class Assignment(ABC):
 
-    _timer: Timer = Timer(name="assignment")
-    _solve_time: float = 0
-    _assignment: tuple[int, int] = (0, 0)
-    _modus_operandi: str = ""
+    def __init__(self) -> None:
+        self.timer: Timer = Timer(name="assignment")
+        self._assignment: tuple[int, int] = (0, 0)
+        self._modus_operandi: str = ""
 
     def start(self) -> None:
-        self._timer.start()
+        self.timer.start()
 
     def stop(self) -> None:
-        if self._solve_time == 0:
-            self._timer.stop()
+        self.timer.stop()
 
     @property
     def modus_operandi(self) -> str:
@@ -29,23 +28,23 @@ class Assignment(ABC):
 
     @property
     def solve_time(self) -> float:
-        return self._timer.duration()
+        return self.timer.duration()
 
     @override
     def __str__(self) -> str:
-        return f"{self._assignment[0]} {self._modus_operandi} {self._assignment[1]}"
+        return f"{self._assignment[0]} {self.modus_operandi} {self._assignment[1]}"
 
 
 class MultiplicationAssignment(Assignment):
     def __init__(self) -> None:
-        self._solve_time: float = 0
+        super().__init__()
         self._assignment: tuple[int, int] = (randint(1, 9), randint(1, 9))
         self._modus_operandi: str = "x"
 
 
 class TensMultiplicationAssignment(Assignment):
     def __init__(self) -> None:
-        self._solve_time: float = 0
+        super().__init__()
         a: int = randint(0, 1)
         b: int = 1 - a
         self._assignment: tuple[int, int] = (
@@ -57,7 +56,7 @@ class TensMultiplicationAssignment(Assignment):
 
 class DivisionAssignment(Assignment):
     def __init__(self) -> None:
-        self._solve_time: float = 0
+        super().__init__()
         b = randint(1, 9)
         c = randint(1, 9)
         a = b * c
