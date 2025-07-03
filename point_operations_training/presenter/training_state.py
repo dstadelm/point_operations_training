@@ -1,34 +1,34 @@
 from typing import override
 
+from point_operations_training.model.assignment import Assignment
 from point_operations_training.presenter.presenter_protocol import PresenterProtocol
 
 
-class AssignmentsState:
+class TrainingState:
     def __init__(self, presenter: PresenterProtocol) -> None:
         self.presenter: PresenterProtocol = presenter
+        self._num_training_assignments: int = 0
         self._show_assignment_screen()
 
     def _show_assignment_screen(self) -> None:
-        if self.presenter.session.solved_assignments >= self.presenter.num_assignments:
-            self.presenter.switch_to_result_state()
+        if self._num_training_assignments >= self.presenter.num_training:
+            self.presenter.switch_to_welcome_state()
         else:
-            new_assignement: str = self.presenter.session.get_new_assignment()
+            assignment: Assignment = self.presenter.session.get_next_train_assignement()
+
             self.presenter.view.show_assignment_screen(
                 user=self.presenter.user_name,
-                assignment=new_assignement,
+                assignment=str(assignment),
                 total_assignments=self.presenter.num_assignments,
-                solved_assignments=self.presenter.session.solved_assignments,
+                solved_assignments=self._num_training_assignments,
             )
+            self._num_training_assignments += 1
 
     def start_assignments(self) -> None:
         """Already in AssignmentsState, no action needed."""
-        self.presenter.commit_assignment()
         self._show_assignment_screen()
 
-    def home(self) -> None:
-        """Initialize the presenter and switch to WelcomeState."""
-        self.presenter.switch_to_welcome_state()
-
+    def home(self) -> None: ...
     def select_user(self) -> None: ...
     def select_modi_operandi(self) -> None: ...
     def create_user(self) -> None: ...

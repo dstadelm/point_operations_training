@@ -12,9 +12,11 @@ from point_operations_training.model.user import User, UserCollection
 from point_operations_training.presenter.assignment_state import AssignmentsState
 from point_operations_training.presenter.create_new_user_state import CreateNewUserState
 from point_operations_training.presenter.init_state import InitState
+from point_operations_training.presenter.result_state import ResultState
 from point_operations_training.presenter.select_modus_state import SelectModusState
 from point_operations_training.presenter.select_user_state import SelectUserState
 from point_operations_training.presenter.state import State
+from point_operations_training.presenter.training_state import TrainingState
 from point_operations_training.presenter.welcome_state import WelcomeState
 from point_operations_training.view.view import UserView
 
@@ -29,8 +31,8 @@ class Presenter:
         #
         self._user_collection: UserCollection = self._db.get_user_collection()
         self._user_name: str = self._db.get_user_collection().last_user
-        self._modus_operandi: AssignmentFactory = MultiplicationAssignmentFactory()
-        self._session: Session = Session(self._modus_operandi)
+        self._assignment_factory: AssignmentFactory = MultiplicationAssignmentFactory()
+        self._session: Session = Session(self._assignment_factory)
         self._view: UserView = UserView()
         self.install_view_hooks()
         self._state: State = InitState(self)
@@ -63,13 +65,13 @@ class Presenter:
         return self._view
 
     @property
-    def modus_operandi(self) -> AssignmentFactory:
-        return self._modus_operandi
+    def modus(self) -> AssignmentFactory:
+        return self._assignment_factory
 
-    @modus_operandi.setter
-    def modus_operandi(self, value: AssignmentFactory) -> None:
-        self._modus_operandi = value
-        self._session = Session(self._modus_operandi)
+    @modus.setter
+    def modus(self, value: AssignmentFactory) -> None:
+        self._assignment_factory = value
+        self._session = Session(self._assignment_factory)
 
     @property
     def user_name(self) -> str:
@@ -104,8 +106,14 @@ class Presenter:
     def switch_to_select_modus_state(self) -> None:
         self.state = SelectModusState(self)
 
-    def switcht_to_assignment_state(self) -> None:
+    def switch_to_assignment_state(self) -> None:
         self.state = AssignmentsState(self)
+
+    def switch_to_result_state(self) -> None:
+        self.state = ResultState(self)
+
+    def switch_to_training_state(self) -> None:
+        self.state = TrainingState(self)
 
     def run(self) -> None:
         _ = self._view.run()  # pyright: ignore [reportUnknownVariableType]
@@ -132,11 +140,19 @@ class Presenter:
     def start_assignments(self) -> None:
         if callable(self.state.start_assignments):
             self.state.start_assignments()
+        else:
+            raise NotImplementedError(
+                "start_assignments method is not implemented in the current state."
+            )
 
     def create_user(self) -> None:
         if callable(self.state.create_user):
             self.state.create_user()
 
     def home(self) -> None:
+        print("###############################################################")
+        print("Switching to home state...")
+        print(f"From << {self.state}")
+        print("###############################################################")
         if callable(self.state.home):
             self.state.home()

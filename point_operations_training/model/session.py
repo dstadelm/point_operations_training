@@ -29,6 +29,18 @@ class Session:
         self._assignments.add_assignment(self._current_assignement)
 
     @property
+    def max(self) -> float:
+        return self._assignments.max_time()
+
+    @property
+    def min(self) -> float:
+        return self._assignments.min_time()
+
+    @property
+    def avg(self) -> float:
+        return self._assignments.avg_time()
+
+    @property
     def solved_assignments(self) -> int:
         return len(self._assignments.assignments)
 

@@ -31,10 +31,8 @@ class AssignmentScreen(ModalScreen[str]):
     def compose(self) -> ComposeResult:
         yield Header(name="Assignment")
         with Center():
-            with Center():
-                yield Digits(id="assignment", value=self.assignement)
-            with Center():
-                yield ProgressBar(total=20, show_eta=False, id="progress")
+            yield Digits(id="assignment", value=self.assignement)
+            yield ProgressBar(total=20, show_eta=False, id="progress")
         yield Footer()
 
     def on_mount(self) -> None:

@@ -1,16 +1,14 @@
-from typing import Callable
+from typing import Callable, override
 
 from textual.app import App, ComposeResult, ScreenStackError
-
-# from textual.reactive import reactive
-from textual.containers import Center
-from textual.widgets import Footer, Header, Label
+from textual.widgets import Footer, Header
 
 from point_operations_training.model.assignment import AssignmentFactory
 from point_operations_training.presenter.empty_hook import create_empty_event_hook
 from point_operations_training.view.assignment_screen import AssignmentScreen
 from point_operations_training.view.create_new_user_screen import CreateNewUser
 from point_operations_training.view.quit_screen import QuitScreen
+from point_operations_training.view.result_screen import ResultScreen
 from point_operations_training.view.select_modus_screen import SelectModus
 from point_operations_training.view.select_user_screen import UserSelectionScreen
 from point_operations_training.view.welcome_screen import WelcomeScreen
@@ -49,10 +47,6 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
     def compose(self) -> ComposeResult:  # pyright: ignore [reportImplicitOverride]
         """Called to add widgets to the app."""
         yield Header()
-
-        with Center():
-            yield Label("Press ENTER to start!", id="start")
-
         yield Footer()
 
     def on_mount(self) -> None:
@@ -101,11 +95,15 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
         self.clear()
         _ = self.push_screen(CreateNewUser(users), callback=callback)
 
-    def show_modi_operandi_selection(
+    def show_modus_selection(
         self, callback: Callable[[AssignmentFactory | None], None]
     ) -> None:
         self.clear()
         _ = self.push_screen(SelectModus(), callback=callback)
+
+    def show_result_screen(self, results: str) -> None:
+        self.clear()
+        _ = self.push_screen(ResultScreen(results))
 
     def action_start_assignements(self) -> None:
         self.on_start_assignments()
@@ -123,4 +121,12 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
         self.on_start_assignments()
 
     def action_home(self) -> None:
+        self.on_home()
+
+    @override
+    def action_toggle_dark(self) -> None:
+        """An action to toggle dark mode."""
+        self.theme = (
+            "textual-dark" if self.theme == "textual-light" else "textual-light"
+        )
         self.on_home()
