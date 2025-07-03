@@ -20,7 +20,7 @@ from point_operations_training.model.result import ResultCollection, result_from
 from point_operations_training.model.session import Session
 from point_operations_training.model.user import User, UserCollection
 from point_operations_training.view.create_new_user_screen import CreateNewUser
-from point_operations_training.view.select_modi_operandi import SelectModiOperandi
+from point_operations_training.view.select_modi_operandi import SelectModus
 from point_operations_training.view.user_selection_screen import UserSelectionScreen
 
 logger = logging.getLogger(__name__)
@@ -236,9 +236,9 @@ class LearnArithmetics(App):  # pyright: ignore [reportMissingTypeArgument]
                 self.modus_operandi = factory().modus_operandi
                 self.reset()
             else:
-                _ = self.push_screen(SelectModiOperandi(), callback=set_modi_operandi)
+                _ = self.push_screen(SelectModus(), callback=set_modi_operandi)
 
-        _ = self.push_screen(SelectModiOperandi(), callback=set_modi_operandi)
+        _ = self.push_screen(SelectModus(), callback=set_modi_operandi)
 
     def reset(self):
         self.assigned = 0

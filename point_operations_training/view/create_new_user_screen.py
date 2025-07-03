@@ -2,11 +2,16 @@ from typing import override
 
 from textual.app import ComposeResult
 from textual.containers import Container
-from textual.screen import ModalScreen
-from textual.widgets import Input
+from textual.screen import Screen
+from textual.widgets import Footer, Header, Input
 
 
-class CreateNewUser(ModalScreen[str]):
+class CreateNewUser(Screen[str]):
+
+    # BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
+    #     ("escape", "app.home", "Home"),
+    #     ("q", "app.request_quit", "Quit"),
+    # ]
 
     def __init__(self, users: list[str]) -> None:
         super().__init__()
@@ -14,10 +19,12 @@ class CreateNewUser(ModalScreen[str]):
 
     @override
     def compose(self) -> ComposeResult:
+        yield Header(name="New User")
         yield Container(
             Input(placeholder="Enter new user name", id="new-user-input"),
             id="UserCreateDialog",
         )
+        yield Footer()
 
     def on_input_submitted(self, input: Input.Submitted) -> None:
         input_widget: Input = self.query_one("#new-user-input", expect_type=Input)

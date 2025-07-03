@@ -20,9 +20,9 @@ class Result:
 def result_from_session(session: Session) -> Result:
     return Result(
         session.date,
-        session.assignments.avg_time(),
-        session.assignments.max_time(),
-        session.assignments.min_time(),
+        session._assignments.avg_time(),
+        session._assignments.max_time(),
+        session._assignments.min_time(),
     )
 
 

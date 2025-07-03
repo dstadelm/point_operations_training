@@ -13,20 +13,30 @@ class Session:
     def __init__(self, assignement_factory: AssignmentFactory) -> None:
         self._assignment_factory: AssignmentFactory = assignement_factory
         self.date: str = str(datetime.now())
-        self.assignments: AssignmentCollection = AssignmentCollection()
+        self._assignments: AssignmentCollection = AssignmentCollection()
+        self._current_assignement: Assignment = self._assignment_factory()
         self._slowest_assignments: list[Assignment] = []
         self._prev_idx: int = -1
         self._training_percentage: int = 20
 
-    def get_new_assignment(self) -> Assignment:
-        return self._assignment_factory()
+    def get_new_assignment(self) -> str:
+        self._current_assignement = self._assignment_factory()
+        self._current_assignement.start()
+        return str(self._current_assignement)
 
-    def add_done_assignment(self, assignment: Assignment) -> None:
-        self.assignments.add_assignment(assignment)
+    def commit_assignment(self) -> None:
+        self._current_assignement.stop()
+        self._assignments.add_assignment(self._current_assignement)
+
+    @property
+    def solved_assignments(self) -> int:
+        return len(self._assignments.assignments)
 
     def slowest_assignments(self, percentage: int) -> list[Assignment]:
         if not self._slowest_assignments:
-            self._slowest_assignments = self.assignments.slowest_assignments(percentage)
+            self._slowest_assignments = self._assignments.slowest_assignments(
+                percentage
+            )
         return self._slowest_assignments
 
     def get_next_train_assignement(self) -> Assignment:
@@ -40,5 +50,5 @@ class Session:
         return self.slowest_assignments(self._training_percentage)[idx]
 
     def __iter__(self) -> Generator[Assignment, None, None]:
-        for assignment in self.assignments.assignments:
+        for assignment in self._assignments.assignments:
             yield assignment
