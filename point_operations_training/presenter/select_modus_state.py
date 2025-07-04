@@ -1,6 +1,6 @@
 from typing import override
 
-from point_operations_training.model.assignment import AssignmentFactory
+from point_operations_training.presenter.modi import Modi
 from point_operations_training.presenter.presenter_protocol import PresenterProtocol
 
 
@@ -13,9 +13,9 @@ class SelectModusState:
         """Initialize the presenter and switch to WelcomeState."""
         self.presenter.switch_to_welcome_state()
 
-    def _set_modus(self, factory: AssignmentFactory | None) -> None:
-        if factory:
-            self.presenter.modus = factory
+    def _set_modus(self, modus: Modi | None) -> None:
+        if modus:
+            self.presenter.modus = modus
         self.presenter.switch_to_welcome_state()
 
     def select_user(self) -> None: ...

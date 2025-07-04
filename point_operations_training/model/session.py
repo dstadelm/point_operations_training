@@ -6,12 +6,24 @@ from point_operations_training.model.assignment import (
     Assignment,
     AssignmentCollection,
     AssignmentFactory,
+    DivisionAssignmentFactory,
+    MultiplicationAssignmentFactory,
+    TensMultiplicationAssignmentFactory,
 )
+from point_operations_training.presenter.modi import Modi
 
 
 class Session:
-    def __init__(self, assignement_factory: AssignmentFactory) -> None:
-        self._assignment_factory: AssignmentFactory = assignement_factory
+    def __init__(self, modus: Modi) -> None:
+        match modus:
+            case Modi.MULTIPLICATION:
+                self._assignment_factory: AssignmentFactory = (
+                    MultiplicationAssignmentFactory()
+                )
+            case Modi.MULTIPLICATIONx10:
+                self._assignment_factory = TensMultiplicationAssignmentFactory()
+            case Modi.DIVISION:
+                self._assignment_factory = DivisionAssignmentFactory()
         self.date: str = str(datetime.now())
         self._assignments: AssignmentCollection = AssignmentCollection()
         self._current_assignement: Assignment = self._assignment_factory()

@@ -3,8 +3,8 @@ from typing import Callable, override
 from textual.app import App, ComposeResult, ScreenStackError
 from textual.widgets import Footer, Header
 
-from point_operations_training.model.assignment import AssignmentFactory
 from point_operations_training.presenter.empty_hook import create_empty_event_hook
+from point_operations_training.presenter.modi import Modi
 from point_operations_training.view.assignment_screen import AssignmentScreen
 from point_operations_training.view.create_new_user_screen import CreateNewUser
 from point_operations_training.view.quit_screen import QuitScreen
@@ -95,9 +95,7 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
         self.clear()
         _ = self.push_screen(CreateNewUser(users), callback=callback)
 
-    def show_modus_selection(
-        self, callback: Callable[[AssignmentFactory | None], None]
-    ) -> None:
+    def show_modus_selection(self, callback: Callable[[Modi | None], None]) -> None:
         self.clear()
         _ = self.push_screen(SelectModus(), callback=callback)
 
