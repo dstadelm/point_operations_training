@@ -30,20 +30,19 @@ class AssignmentsState:
         result = result_from_session(self._session)
 
         if user:
-            user.add_result(self._presenter.modus.value, result)
-            user.get_max_matrix(self._presenter.modus.value).update(self._session)
+            user.add_result(str(self._presenter.modus.value), result)
+            user.get_max_matrix(str(self._presenter.modus.value)).update(self._session)
         else:
             raise ValueError(f"User {self._presenter.user_name} not found")
 
         self._presenter.store_results()
 
     def start_assignments(self) -> None:
-        """Already in AssignmentsState, no action needed."""
+        # Commit the current assignment before starting a new one
         self._session.commit_assignment()
         self._show_assignment_screen()
 
     def home(self) -> None:
-        """Initialize the presenter and switch to WelcomeState."""
         self._presenter.switch_to_welcome_state()
 
     def select_user(self) -> None: ...

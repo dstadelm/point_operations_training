@@ -3,7 +3,7 @@ from typing import override
 from textual.app import ComposeResult
 from textual.containers import Center
 from textual.screen import ModalScreen
-from textual.widgets import Digits, Footer, Header, Input, ProgressBar
+from textual.widgets import Digits, Footer, Header, ProgressBar
 
 
 class AssignmentScreen(ModalScreen[str]):
@@ -32,12 +32,10 @@ class AssignmentScreen(ModalScreen[str]):
         yield Header(name="Assignment")
         with Center():
             yield Digits(id="assignment", value=self.assignement)
+        with Center():
             yield ProgressBar(total=20, show_eta=False, id="progress")
         yield Footer()
 
     def on_mount(self) -> None:
         progress: ProgressBar = self.query_one(ProgressBar)
         progress.update(total=self.total_assignments, progress=self.solved_assignments)
-
-    def on_input_submitted(self, input: Input.Submitted) -> None:
-        _ = self.dismiss()

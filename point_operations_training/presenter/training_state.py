@@ -14,7 +14,7 @@ class TrainingState:
 
     def _show_assignment_screen(self) -> None:
         if self._num_training_assignments >= self.presenter.num_training:
-            self.presenter.switch_to_welcome_state()
+            self.presenter.switch_to_stats_state()
         else:
             assignment: Assignment = self._session.get_next_train_assignement()
 

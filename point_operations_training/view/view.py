@@ -3,14 +3,16 @@ from typing import Callable, override
 from textual.app import App, ComposeResult, ScreenStackError
 from textual.widgets import Footer, Header
 
+from point_operations_training.model.result import ResultCollectionProtocol
 from point_operations_training.presenter.empty_hook import create_empty_event_hook
-from point_operations_training.presenter.modi import Modi
+from point_operations_training.presenter.modus import Modus
 from point_operations_training.view.assignment_screen import AssignmentScreen
 from point_operations_training.view.create_new_user_screen import CreateNewUser
 from point_operations_training.view.quit_screen import QuitScreen
 from point_operations_training.view.result_screen import ResultScreen
 from point_operations_training.view.select_modus_screen import SelectModus
 from point_operations_training.view.select_user_screen import UserSelectionScreen
+from point_operations_training.view.stats_screen import StatsScreen
 from point_operations_training.view.welcome_screen import WelcomeScreen
 
 
@@ -60,10 +62,10 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
         except ScreenStackError:
             pass
 
-    def show_welcome_screen(self, name: str) -> None:
+    def show_welcome_screen(self, name: str, modus: str) -> None:
         """Show the welcome screen."""
         self.clear()
-        _ = self.push_screen(WelcomeScreen(name))
+        _ = self.push_screen(WelcomeScreen(name, modus))
 
     def show_assignment_screen(
         self,
@@ -95,13 +97,18 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
         self.clear()
         _ = self.push_screen(CreateNewUser(users), callback=callback)
 
-    def show_modus_selection(self, callback: Callable[[Modi | None], None]) -> None:
+    def show_modus_selection(self, callback: Callable[[Modus | None], None]) -> None:
         self.clear()
         _ = self.push_screen(SelectModus(), callback=callback)
 
     def show_result_screen(self, results: str) -> None:
         self.clear()
         _ = self.push_screen(ResultScreen(results))
+
+    def show_stats_screen(self, results: ResultCollectionProtocol) -> None:
+        """Show the stats screen."""
+        self.clear()
+        _ = self.push_screen(StatsScreen(results))
 
     def action_start_assignements(self) -> None:
         self.on_start_assignments()
@@ -124,7 +131,7 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
     @override
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
-        self.theme = (
+        self.theme = (  # pyright: ignore [reportUnannotatedClassAttribute]
             "textual-dark" if self.theme == "textual-light" else "textual-light"
         )
         self.on_home()

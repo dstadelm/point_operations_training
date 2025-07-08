@@ -69,21 +69,35 @@ class DivisionAssignment(Assignment):
 
 class AssignmentFactory(Protocol):
     def __call__(self) -> Assignment: ...
+    @override
+    def __str__(self) -> str: ...
 
 
 class MultiplicationAssignmentFactory:
     def __call__(self) -> Assignment:
         return MultiplicationAssignment()
 
+    @override
+    def __str__(self) -> str:
+        return "Multiplication"
+
 
 class TensMultiplicationAssignmentFactory:
     def __call__(self) -> Assignment:
         return TensMultiplicationAssignment()
 
+    @override
+    def __str__(self) -> str:
+        return "Multiplication x10"
+
 
 class DivisionAssignmentFactory:
     def __call__(self) -> Assignment:
         return DivisionAssignment()
+
+    @override
+    def __str__(self) -> str:
+        return "Division"
 
 
 class AssignmentCollection:

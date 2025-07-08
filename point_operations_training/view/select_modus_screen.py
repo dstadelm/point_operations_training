@@ -5,10 +5,10 @@ from textual.containers import Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Footer, Header, Label, ListItem, ListView, Static
 
-from point_operations_training.presenter.modi import Modi
+from point_operations_training.presenter.modus import Modus
 
 
-class SelectModus(ModalScreen[Modi]):
+class SelectModus(ModalScreen[Modus]):
 
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
         ("escape", "app.home", "Home"),
@@ -18,13 +18,9 @@ class SelectModus(ModalScreen[Modi]):
 
     @override
     def compose(self) -> ComposeResult:
-        list_items = [
-            ListItem(Label(Modi.MULTIPLICATION.value), name=Modi.MULTIPLICATION.value),
-            ListItem(
-                Label(Modi.MULTIPLICATIONx10.value), name=Modi.MULTIPLICATIONx10.value
-            ),
-            ListItem(Label(Modi.DIVISION.value), name=Modi.DIVISION.value),
-            # ListItem(Label("Division 10"), name="Division 10"),
+        list_items: list[ListItem] = [
+            ListItem(Label(renderable=str(data.value)), name=str(data.value))
+            for data in Modus
         ]
         yield Header(name="Modus Operandi")
         yield Vertical(
@@ -36,12 +32,6 @@ class SelectModus(ModalScreen[Modi]):
         yield Footer()
 
     def on_list_view_selected(self, event: ListView.Selected):
-        match event.item.name:
-            case Modi.MULTIPLICATION.value:
-                _ = self.dismiss(Modi.MULTIPLICATION)
-            case "Multiplication 10":
-                _ = self.dismiss(Modi.MULTIPLICATIONx10)
-            case "Division":
-                _ = self.dismiss(Modi.DIVISION)
-            case _:
-                raise ValueError
+        for data in Modus:
+            if str(data.value) == event.item.name:
+                _ = self.dismiss(data)

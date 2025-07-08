@@ -8,11 +8,12 @@ from point_operations_training.model.user import User, UserCollection
 from point_operations_training.presenter.assignment_state import AssignmentsState
 from point_operations_training.presenter.create_new_user_state import CreateNewUserState
 from point_operations_training.presenter.init_state import InitState
-from point_operations_training.presenter.modi import Modi
+from point_operations_training.presenter.modus import Modus
 from point_operations_training.presenter.result_state import ResultState
 from point_operations_training.presenter.select_modus_state import SelectModusState
 from point_operations_training.presenter.select_user_state import SelectUserState
 from point_operations_training.presenter.state import State
+from point_operations_training.presenter.stats_state import StatsState
 from point_operations_training.presenter.training_state import TrainingState
 from point_operations_training.presenter.welcome_state import WelcomeState
 from point_operations_training.view.view_protocol import ViewProtocol
@@ -28,7 +29,7 @@ class Presenter:
         #
         self._user_collection: UserCollection = self._db.get_user_collection()
         self._user_name: str = self._db.get_user_collection().last_user
-        self._modus: Modi = Modi.MULTIPLICATION
+        self._modus: Modus = Modus.MULTIPLICATION
         self._view: ViewProtocol = view
         self.install_view_hooks()
         self._state: State = InitState(self)
@@ -53,19 +54,16 @@ class Presenter:
         return self._user_collection
 
     @property
-    def modus(self) -> Modi:
+    def modus(self) -> Modus:
         return self._modus
 
     @modus.setter
-    def modus(self, value: Modi) -> None:
+    def modus(self, value: Modus) -> None:
         self._modus = value
 
     @property
     def user_name(self) -> str:
         return self._user_name
-
-    def store_results(self) -> None:
-        self._db.save_db(self._user_collection)
 
     @user_name.setter
     def user_name(self, name: str) -> None:
@@ -74,7 +72,11 @@ class Presenter:
             self._user_collection.add_user(new_user)
         if name not in self.users:
             raise ValueError(f"User '{name}' does not exist.")
+        self._user_collection.last_user = name
         self._user_name = name
+
+    def store_results(self) -> None:
+        self._db.save_db(self._user_collection)
 
     @property
     def users(self) -> list[str]:
@@ -101,6 +103,9 @@ class Presenter:
 
     def switch_to_training_state(self, session: Session) -> None:
         self._state = TrainingState(self, session)
+
+    def switch_to_stats_state(self) -> None:
+        self._state = StatsState(self)
 
     def run(self) -> None:
         _ = self._view.run()

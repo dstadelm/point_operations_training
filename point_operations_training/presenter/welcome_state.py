@@ -7,7 +7,9 @@ class WelcomeState:
     def __init__(self, presenter: PresenterProtocol) -> None:
         self.presenter: PresenterProtocol = presenter
         if self.presenter.user_name:
-            self.presenter.view.show_welcome_screen(self.presenter.user_name)
+            self.presenter.view.show_welcome_screen(
+                self.presenter.user_name, str(self.presenter.modus.value)
+            )
         else:
             self.presenter.switch_to_create_user_state()
 

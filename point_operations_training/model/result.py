@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Protocol
 
 from point_operations_training.model.session import Session
 
@@ -20,13 +21,19 @@ class Result:
 def result_from_session(session: Session) -> Result:
     return Result(
         session.date,
-        session._assignments.avg_time(),
-        session._assignments.max_time(),
-        session._assignments.min_time(),
+        session.avg,
+        session.max,
+        session.min,
     )
 
 
 ResultCollectionType = list[dict[str, str | float]]
+
+
+class ResultCollectionProtocol(Protocol):
+    def avg_series(self) -> list[float]: ...
+    def max_series(self) -> list[float]: ...
+    def min_series(self) -> list[float]: ...
 
 
 class ResultCollection:

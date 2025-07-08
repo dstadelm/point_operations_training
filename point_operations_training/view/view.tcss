@@ -2,6 +2,9 @@ Screen{
   overflow: hidden hidden;
 }
 
+AssignmentScreen {
+  align: center middle;
+}
 #assignment {
   width: 40;
   margin: 1;
@@ -13,10 +16,34 @@ Screen{
 ProgressBar {
   margin: 1;
 }
+
 #stats {
   margin: 1;
 }
+
+WelcomeScreen {
+    align: center middle;
+}
+
+#welcome_vertical {
+  align: center middle;
+  width: 100%;
+  height: 100%;
+}
 #start {
+  width: auto;
+  margin: 1;
+  text-align: center;
+}
+
+#modus {
+  width: auto;
+  margin: 1;
+  text-align: center;
+}
+
+#start_button {
+  width: auto;
   margin: 1;
 }
 
@@ -34,9 +61,6 @@ SelectModiOperandi {
     align: center middle;
 }
 
-WelcomeScreen {
-    align: center middle;
-}
 
 CreateNewUser {
     align: center middle;
