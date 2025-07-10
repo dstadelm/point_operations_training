@@ -6,7 +6,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Footer, Header, Label, ListItem, ListView, Static
 
 
-class UserSelectionScreen(ModalScreen[str]):
+class SelectUserScreen(ModalScreen[str]):
 
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
         ("escape", "app.home", "Home"),

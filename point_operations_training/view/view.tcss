@@ -47,26 +47,44 @@ WelcomeScreen {
   margin: 1;
 }
 
+#matplotlib_button {
+  width: auto;
+  margin: 1;
+}
+
 Container {
   max-height: 50%;
   max-width: 60%;
 }
 
-
-UserSelectionScreen {
+ResultScreen {
     align: center middle;
 }
 
-SelectModiOperandi {
+SelectUserScreen {
+    align: center middle;
+}
+
+SelectModusScreen {
     align: center middle;
 }
 
 
-CreateNewUser {
+CreateNewUserScreen {
     align: center middle;
 }
 
 #UserSelectionDialog {
+    align: center middle;
+    content-align: center middle;
+    padding: 0 1;
+    width: 60;
+    height: 11;
+    border: thick $background 80%;
+    background: $surface;
+}
+
+#ModusSelectionDialog {
     align: center middle;
     content-align: center middle;
     padding: 0 1;

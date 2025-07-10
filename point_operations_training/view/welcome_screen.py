@@ -32,8 +32,10 @@ class WelcomeScreen(ModalScreen[str]):
         with Center():
             yield Label(f"Selected Modus: {self._modus}", id="modus")
         with Center():
-            yield Button("Start", variant="primary", id="start_button")
+            yield Button(
+                "Start",
+                variant="primary",
+                id="start_button",
+                action="app.new_assignment",
+            )
         yield Footer()
-
-    async def on_button_pressed(self) -> None:
-        _ = await self.app.run_action("new_assignment")

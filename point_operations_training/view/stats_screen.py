@@ -1,8 +1,10 @@
 from typing import override
 
+import matplotlib.pyplot as mplt
 from textual.app import ComposeResult
+from textual.containers import Center
 from textual.screen import ModalScreen
-from textual.widgets import Footer, Header
+from textual.widgets import Button, Footer, Header
 from textual_plotext import PlotextPlot
 
 from point_operations_training.model.result import ResultCollectionProtocol
@@ -24,6 +26,8 @@ class StatsScreen(ModalScreen[str]):
     def compose(self) -> ComposeResult:
         yield Header()
         yield PlotextPlot()
+        with Center():
+            yield Button("External Viewer", variant="primary", id="matplotlib_button")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -39,5 +43,19 @@ class StatsScreen(ModalScreen[str]):
 
         plt.title("Progress Plot")  # to apply a title
 
-    def on_key(self) -> None:
-        _ = self.dismiss()
+    def on_button_pressed(self) -> None:
+        avg_series = self._results.avg_series()
+        max_series = self._results.max_series()
+        min_series = self._results.min_series()
+
+        _, ax = mplt.subplots()  # pyright: ignore [reportUnknownMemberType]
+        (avg_plot,) = ax.plot(avg_series)  # pyright: ignore [reportUnknownMemberType]
+        (max_plot,) = ax.plot(max_series)  # pyright: ignore [reportUnknownMemberType]
+        (min_plot,) = ax.plot(min_series)  # pyright: ignore [reportUnknownMemberType]
+        _ = ax.legend(  # pyright: ignore [reportUnknownMemberType]
+            (avg_plot, max_plot, min_plot),
+            ("avg", "max", "min"),
+            loc="upper right",
+            shadow=True,
+        )
+        mplt.show()  # pyright: ignore [reportUnknownMemberType]

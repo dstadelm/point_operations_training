@@ -7,11 +7,11 @@ from point_operations_training.model.result import ResultCollectionProtocol
 from point_operations_training.presenter.empty_hook import create_empty_event_hook
 from point_operations_training.presenter.modus import Modus
 from point_operations_training.view.assignment_screen import AssignmentScreen
-from point_operations_training.view.create_new_user_screen import CreateNewUser
+from point_operations_training.view.create_new_user_screen import CreateNewUserScreen
 from point_operations_training.view.quit_screen import QuitScreen
 from point_operations_training.view.result_screen import ResultScreen
-from point_operations_training.view.select_modus_screen import SelectModus
-from point_operations_training.view.select_user_screen import UserSelectionScreen
+from point_operations_training.view.select_modus_screen import SelectModusScreen
+from point_operations_training.view.select_user_screen import SelectUserScreen
 from point_operations_training.view.stats_screen import StatsScreen
 from point_operations_training.view.welcome_screen import WelcomeScreen
 
@@ -89,17 +89,17 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
         self, users: list[str], callback: Callable[[str | None], None]
     ) -> None:
         self.clear()
-        _ = self.push_screen(UserSelectionScreen(users), callback=callback)
+        _ = self.push_screen(SelectUserScreen(users), callback=callback)
 
     def show_create_new_user(
         self, users: list[str], callback: Callable[[str | None], None]
     ) -> None:
         self.clear()
-        _ = self.push_screen(CreateNewUser(users), callback=callback)
+        _ = self.push_screen(CreateNewUserScreen(users), callback=callback)
 
     def show_modus_selection(self, callback: Callable[[Modus | None], None]) -> None:
         self.clear()
-        _ = self.push_screen(SelectModus(), callback=callback)
+        _ = self.push_screen(SelectModusScreen(), callback=callback)
 
     def show_result_screen(self, results: str) -> None:
         self.clear()

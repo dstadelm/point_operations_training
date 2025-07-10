@@ -8,7 +8,7 @@ from textual.widgets import Footer, Header, Label, ListItem, ListView, Static
 from point_operations_training.presenter.modus import Modus
 
 
-class SelectModus(ModalScreen[Modus]):
+class SelectModusScreen(ModalScreen[Modus]):
 
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
         ("escape", "app.home", "Home"),
@@ -26,7 +26,7 @@ class SelectModus(ModalScreen[Modus]):
         yield Vertical(
             Static("Select a user:", id="title"),
             ListView(*list_items, id="user-list", initial_index=0),
-            id="UserSelectionDialog",
+            id="ModusSelectionDialog",
             classes="usd",
         )
         yield Footer()

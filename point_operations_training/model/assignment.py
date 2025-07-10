@@ -51,7 +51,7 @@ class TensMultiplicationAssignment(Assignment):
             10**a * randint(1, 9),
             10**b * randint(1, 9),
         )
-        self._modus_operandi: str = "10x"
+        self._modus_operandi: str = "x"
 
 
 class DivisionAssignment(Assignment):

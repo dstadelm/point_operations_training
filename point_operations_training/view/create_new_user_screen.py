@@ -6,7 +6,7 @@ from textual.screen import Screen
 from textual.widgets import Footer, Header, Input
 
 
-class CreateNewUser(Screen[str]):
+class CreateNewUserScreen(Screen[str]):
 
     # BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
     #     ("escape", "app.home", "Home"),
