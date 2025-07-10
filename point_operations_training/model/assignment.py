@@ -2,7 +2,7 @@ from abc import ABC
 from random import randint
 from typing import Protocol, override
 
-from point_operations_training.timer import Timer
+from point_operations_training.utilities.timer import Timer
 
 
 class Assignment(ABC):

@@ -35,6 +35,18 @@ The ansible script
 ~/.local/bin/point_operations_training.sh
 - a desktop file under ~/.local/share/applications
 
-<!-- # Requirements tkinter is required for matplot ``` sudo apt install
-python3-tk ``` -->
+## Technology used
+- [uv](https://docs.astral.sh/uv/guides/install-python/) for the python environment
+- [Textual](https://textual.textualize.io/) for the UI
+- MVP (Model-View-Presenter) architecture
+- State Pattern for managing the application state
+- JSON for data storage
 
+## Debugging
+
+Currently debugging requires poetry to setup the virtual environment. There were issues with uv and textual in debug mode, so the program is not run with uv.
+To run the program in debug mode, you can use the following command:
+
+```bash
+textual run --dev main.py
+```
