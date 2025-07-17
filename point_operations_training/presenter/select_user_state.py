@@ -1,11 +1,11 @@
 from typing import override
 
-from point_operations_training.presenter.presenter_protocol import PresenterProtocol
+from point_operations_training.presenter.presenter import Presenter
 
 
 class SelectUserState:
-    def __init__(self, presenter: PresenterProtocol) -> None:
-        self.presenter: PresenterProtocol = presenter
+    def __init__(self, presenter: Presenter) -> None:
+        self.presenter: Presenter = presenter
         self.presenter.view.show_user_selection(self.presenter.users, self._set_user)
 
     def _set_user(self, value: str | None):

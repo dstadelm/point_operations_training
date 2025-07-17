@@ -1,12 +1,12 @@
 from typing import override
 
 from point_operations_training.presenter.modus import Modus
-from point_operations_training.presenter.presenter_protocol import PresenterProtocol
+from point_operations_training.presenter.presenter import Presenter
 
 
 class SelectModusState:
-    def __init__(self, presenter: PresenterProtocol) -> None:
-        self.presenter: PresenterProtocol = presenter
+    def __init__(self, presenter: Presenter) -> None:
+        self.presenter: Presenter = presenter
         self.presenter.view.show_modus_selection(self._set_modus)
 
     def home(self) -> None:

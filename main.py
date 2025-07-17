@@ -2,13 +2,13 @@
 from pathlib import Path
 
 from point_operations_training.model.assignment_model import AssignmentModel
-from point_operations_training.presenter.presenter import Presenter
-from point_operations_training.view.view import UserView
+from point_operations_training.presenter.assignment_presenter import AssignmentPresenter
+from point_operations_training.view.textual_view import TextualView
 
 # from point_operations_training.tui import LearnArithmetics
 
 if __name__ == "__main__":
-    view = UserView()
+    view = TextualView()
     model = AssignmentModel(Path("db.json"))
-    app = Presenter(view, model)
+    app = AssignmentPresenter(view, model)
     app.run()

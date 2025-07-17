@@ -1,11 +1,11 @@
 from typing import override
 
-from point_operations_training.presenter.presenter_protocol import PresenterProtocol
+from point_operations_training.presenter.presenter import Presenter
 
 
 class TrainingState:
-    def __init__(self, presenter: PresenterProtocol) -> None:
-        self._presenter: PresenterProtocol = presenter
+    def __init__(self, presenter: Presenter) -> None:
+        self._presenter: Presenter = presenter
         self._num_training_assignments: int = 0
         self._show_assignment_screen()
 

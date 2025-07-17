@@ -1,11 +1,11 @@
 from typing import override
 
-from point_operations_training.presenter.presenter_protocol import PresenterProtocol
+from point_operations_training.presenter.presenter import Presenter
 
 
 class WelcomeState:
-    def __init__(self, presenter: PresenterProtocol) -> None:
-        self.presenter: PresenterProtocol = presenter
+    def __init__(self, presenter: Presenter) -> None:
+        self.presenter: Presenter = presenter
         if self.presenter.user_name:
             self.presenter.view.show_welcome_screen(
                 self.presenter.user_name, str(self.presenter.modus.value)

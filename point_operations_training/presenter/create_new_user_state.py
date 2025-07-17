@@ -1,11 +1,11 @@
 from typing import override
 
-from point_operations_training.presenter.presenter_protocol import PresenterProtocol
+from point_operations_training.presenter.presenter import Presenter
 
 
 class CreateNewUserState:
-    def __init__(self, presenter: PresenterProtocol) -> None:
-        self.presenter: PresenterProtocol = presenter
+    def __init__(self, presenter: Presenter) -> None:
+        self.presenter: Presenter = presenter
         self.presenter.view.show_create_new_user(self.presenter.users, self._add_user)
 
     def _add_user(self, name: str | None) -> None:
