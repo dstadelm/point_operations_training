@@ -1,7 +1,6 @@
 from typing import Callable, override
 
-from textual.app import App, ComposeResult, ScreenStackError
-from textual.widgets import Footer, Header
+from textual.app import App, ScreenStackError
 
 from point_operations_training.model.result import ResultCollectionProtocol
 from point_operations_training.presenter.empty_hook import create_empty_event_hook
@@ -43,13 +42,12 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
         )
         #
         self.on_home: Callable[..., None] = create_empty_event_hook(
-            event_hook_name="on_initialize"
+            event_hook_name="on_home"
         )  # Event hook to initialize the app
 
-    def compose(self) -> ComposeResult:  # pyright: ignore [reportImplicitOverride]
-        """Called to add widgets to the app."""
-        yield Header()
-        yield Footer()
+        self.on_stats: Callable[..., None] = create_empty_event_hook(
+            event_hook_name="on_stats"
+        )  # Event hook to initialize the app
 
     def on_mount(self) -> None:
         """Called when the app is mounted."""
@@ -114,6 +112,7 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
         self.on_start_assignments()
 
     def action_request_quit(self) -> None:
+        self.clear()
         _ = self.push_screen(QuitScreen())
 
     def action_select_user(self) -> None:
@@ -127,6 +126,9 @@ class UserView(App):  # pyright: ignore [reportMissingTypeArgument]
 
     def action_home(self) -> None:
         self.on_home()
+
+    def action_show_stats(self) -> None:
+        self.on_stats()
 
     @override
     def action_toggle_dark(self) -> None:

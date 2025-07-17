@@ -1,40 +1,41 @@
 from typing import override
 
-from point_operations_training.model.assignment import Assignment
-from point_operations_training.model.session import Session
 from point_operations_training.presenter.presenter_protocol import PresenterProtocol
 
 
 class TrainingState:
-    def __init__(self, presenter: PresenterProtocol, session: Session) -> None:
-        self.presenter: PresenterProtocol = presenter
-        self._session: Session = session
+    def __init__(self, presenter: PresenterProtocol) -> None:
+        self._presenter: PresenterProtocol = presenter
         self._num_training_assignments: int = 0
         self._show_assignment_screen()
 
     def _show_assignment_screen(self) -> None:
-        if self._num_training_assignments >= self.presenter.num_training:
-            self.presenter.switch_to_stats_state()
-        else:
-            assignment: Assignment = self._session.get_next_train_assignement()
+        # if self._num_training_assignments >= self._presenter.num_training:
+        #     self._presenter.switch_to_stats_state()
+        try:
+            assignment: str = self._presenter.model.get_next_train_assignment()
+            solved, total = self._presenter.model.get_training_progress()
 
-            self.presenter.view.show_assignment_screen(
-                user=self.presenter.user_name,
-                assignment=str(assignment),
-                total_assignments=self.presenter.num_assignments,
-                solved_assignments=self._num_training_assignments,
+            self._presenter.view.show_assignment_screen(
+                user=self._presenter.user_name,
+                assignment=assignment,
+                total_assignments=total,
+                solved_assignments=solved,
             )
             self._num_training_assignments += 1
+        except StopIteration:
+            self._presenter.switch_to_stats_state()
 
     def start_assignments(self) -> None:
         self._show_assignment_screen()
 
     def home(self) -> None:
-        self.presenter.switch_to_welcome_state()
+        self._presenter.switch_to_welcome_state()
 
     def select_user(self) -> None: ...
     def select_modi_operandi(self) -> None: ...
     def create_user(self) -> None: ...
+    def stats(self) -> None: ...
 
     @override
     def __repr__(self) -> str:

@@ -11,6 +11,7 @@ class ViewProtocol(Protocol):
     on_start_assignments: Callable[..., None]
     on_create_user: Callable[..., None]
     on_home: Callable[..., None]
+    on_stats: Callable[..., None]
 
     def show_welcome_screen(self, name: str, modus: str) -> None: ...
 

@@ -34,3 +34,7 @@ class SelectUserScreen(ModalScreen[str]):
 
     def on_list_view_selected(self, event: ListView.Selected):
         _ = self.dismiss(event.item.name)
+
+    def on_mount(self) -> None:
+        self.app.title = "Select User"
+        self.title = "Select User"  # pyright: ignore [reportUnannotatedClassAttribute]

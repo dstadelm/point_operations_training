@@ -35,3 +35,7 @@ class SelectModusScreen(ModalScreen[Modus]):
         for data in Modus:
             if str(data.value) == event.item.name:
                 _ = self.dismiss(data)
+
+    def on_mount(self) -> None:
+        self.app.title = "Select Modus"
+        self.title = "Select Modus"  # pyright: ignore [reportUnannotatedClassAttribute]

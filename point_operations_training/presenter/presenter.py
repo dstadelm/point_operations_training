@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
-
-from point_operations_training.model.data_base import DataBase
-from point_operations_training.model.session import Session
-from point_operations_training.model.user import User, UserCollection
+from point_operations_training.model.model import Model
 from point_operations_training.presenter.assignment_state import AssignmentsState
 from point_operations_training.presenter.create_new_user_state import CreateNewUserState
 from point_operations_training.presenter.init_state import InitState
@@ -21,15 +17,8 @@ from point_operations_training.view.view_protocol import ViewProtocol
 
 class Presenter:
 
-    def __init__(self, view: ViewProtocol) -> None:
-        self._db_path: Path = Path("db.json")
-        self._db: DataBase = DataBase(self._db_path)
-        # if not self._db_path.exists():
-        #     self._db.create_empty_db()
-        #
-        self._user_collection: UserCollection = self._db.get_user_collection()
-        self._user_name: str = self._db.get_user_collection().last_user
-        self._modus: Modus = Modus.MULTIPLICATION
+    def __init__(self, view: ViewProtocol, model: Model) -> None:
+        self._model: Model = model
         self._view: ViewProtocol = view
         self.install_view_hooks()
         self._state: State = InitState(self)
@@ -50,38 +39,29 @@ class Presenter:
         return self._view
 
     @property
-    def user_collection(self) -> UserCollection:
-        return self._user_collection
+    def model(self) -> Model:
+        return self._model
 
     @property
     def modus(self) -> Modus:
-        return self._modus
+        return self._model.modus
 
     @modus.setter
     def modus(self, value: Modus) -> None:
-        self._modus = value
+        self._model.modus = value
 
     @property
     def user_name(self) -> str:
-        return self._user_name
+        return self._model.user
 
     @user_name.setter
     def user_name(self, name: str) -> None:
-        if name not in self.users:
-            new_user = User(name)
-            self._user_collection.add_user(new_user)
-        if name not in self.users:
-            raise ValueError(f"User '{name}' does not exist.")
-        self._user_collection.last_user = name
-        self._user_name = name
-
-    def store_results(self) -> None:
-        self._db.save_db(self._user_collection)
+        self._model.user = name
 
     @property
     def users(self) -> list[str]:
         """Returns a list of user names."""
-        return [user.name for user in self._user_collection.users]
+        return self._model.users
 
     def switch_to_create_user_state(self) -> None:
         self._state = CreateNewUserState(self)
@@ -98,11 +78,11 @@ class Presenter:
     def switch_to_assignment_state(self) -> None:
         self._state = AssignmentsState(self)
 
-    def switch_to_result_state(self, session: Session) -> None:
-        self._state = ResultState(self, session)
+    def switch_to_result_state(self) -> None:
+        self._state = ResultState(self)
 
-    def switch_to_training_state(self, session: Session) -> None:
-        self._state = TrainingState(self, session)
+    def switch_to_training_state(self) -> None:
+        self._state = TrainingState(self)
 
     def switch_to_stats_state(self) -> None:
         self._state = StatsState(self)
@@ -120,6 +100,7 @@ class Presenter:
         self._view.on_start_assignments = self.start_assignments
         self._view.on_create_user = self.create_user
         self._view.on_home = self.home
+        self._view.on_stats = self.stats
 
     def select_user(self) -> None:
         if callable(self._state.select_user):
@@ -140,3 +121,7 @@ class Presenter:
     def home(self) -> None:
         if callable(self._state.home):
             self._state.home()
+
+    def stats(self) -> None:
+        if callable(self._state.stats):
+            self._state.stats()

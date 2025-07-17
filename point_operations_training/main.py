@@ -1,7 +1,4 @@
 #! /usr/bin/env -S uv run --no-project --with numpy --with textual --with textual-plotext --python 3.13 python
-from pathlib import Path
-
-from point_operations_training.model.assignment_model import AssignmentModel
 from point_operations_training.presenter.presenter import Presenter
 from point_operations_training.view.view import UserView
 
@@ -9,6 +6,5 @@ from point_operations_training.view.view import UserView
 
 if __name__ == "__main__":
     view = UserView()
-    model = AssignmentModel(Path("db.json"))
-    app = Presenter(view, model)
+    app = Presenter(view)
     app.run()

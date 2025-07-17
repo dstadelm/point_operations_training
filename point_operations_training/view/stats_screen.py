@@ -31,6 +31,8 @@ class StatsScreen(ModalScreen[str]):
         yield Footer()
 
     def on_mount(self) -> None:
+        self.app.title = "Statistics"
+        self.title = "Statistics"  # pyright: ignore [reportUnannotatedClassAttribute]
         plt = self.query_one(PlotextPlot).plt
 
         avg_series = self._results.avg_series()
@@ -48,6 +50,7 @@ class StatsScreen(ModalScreen[str]):
         max_series = self._results.max_series()
         min_series = self._results.min_series()
 
+        mplt.style.use("dark_background")
         _, ax = mplt.subplots()  # pyright: ignore [reportUnknownMemberType]
         (avg_plot,) = ax.plot(avg_series)  # pyright: ignore [reportUnknownMemberType]
         (max_plot,) = ax.plot(max_series)  # pyright: ignore [reportUnknownMemberType]

@@ -9,10 +9,11 @@ from textual.widgets import Button, Footer, Header, Label
 class WelcomeScreen(ModalScreen[str]):
 
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
-        ("u", "app.select_user", "Select user"),
-        ("o", "app.select_modi_operandi", "Select operation"),
         ("d", "app.toggle_dark", "Toggle dark mode"),
+        ("o", "app.select_modi_operandi", "Select operation"),
         ("q", "app.request_quit", "Quit"),
+        ("s", "app.show_stats", "Show statistics"),
+        ("u", "app.select_user", "Select user"),
     ]
 
     def __init__(self, user: str, modus: str) -> None:
@@ -23,6 +24,12 @@ class WelcomeScreen(ModalScreen[str]):
         else:
             self.welcome_message = "Welcome!"
         super().__init__()
+
+    def on_mount(self) -> None:
+        self.app.title = "Welcome"
+        self.title = "Welcome"  # pyright: ignore [reportUnannotatedClassAttribute]
+        button = self.query_one("#start_button", Button)
+        button.action_scroll_end
 
     @override
     def compose(self) -> ComposeResult:

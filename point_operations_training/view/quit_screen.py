@@ -1,4 +1,5 @@
 from typing import override
+
 from textual.app import ComposeResult
 from textual.containers import Grid
 from textual.screen import Screen
@@ -16,6 +17,9 @@ class QuitScreen(Screen):  # pyright: ignore [reportMissingTypeArgument]
             Button("Cancel", variant="primary", id="cancel"),
             id="dialog",
         )
+
+    def on_mount(self) -> None:
+        self.title = "Quit"  # pyright: ignore [reportUnannotatedClassAttribute]
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "quit":

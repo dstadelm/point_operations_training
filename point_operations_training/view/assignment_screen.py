@@ -37,5 +37,7 @@ class AssignmentScreen(ModalScreen[str]):
         yield Footer()
 
     def on_mount(self) -> None:
+        self.app.title = "Assignment"
+        self.title = "Assignment"  # pyright: ignore [reportUnannotatedClassAttribute]
         progress: ProgressBar = self.query_one(ProgressBar)
         progress.update(total=self.total_assignments, progress=self.solved_assignments)

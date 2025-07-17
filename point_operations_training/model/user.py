@@ -67,10 +67,12 @@ UserCollectionType = dict[str, dict[str, UserType] | str]
 class UserCollection:
     def __init__(self) -> None:
         self.users: list[User] = []
-        self.last_user: str = ""
+        self._current_user: User | None = None
 
     def to_dict(self) -> UserCollectionType:
-        data: UserCollectionType = {"last_user": self.last_user, "users": {}}
+        if self._current_user is None:
+            raise ValueError("No current user set.")
+        data: UserCollectionType = {"last_user": self._current_user.name, "users": {}}
         user_data = {}
         for user in self.users:
             user_data[user.name] = user.to_dict()
@@ -86,17 +88,27 @@ class UserCollection:
             user = User(name)
             user.from_dict(value)
             self.users.append(user)
-        self.last_user = data.get(
+        last_user: str = data.get(
             "last_user", ""
-        )  # pyright: ignore [reportAttributeAccessIssue]
+        )  # pyright: ignore [reportAssignmentType]
+
+        self._current_user = self.get_user(last_user)
 
     def get_users(self) -> list[str]:
         return [u.name for u in self.users]
 
-    def add_user(self, user: User) -> None:
-        self.users.append(user)
+    def create_new_user(self, user_name: str) -> None:
+        self._current_user = User(user_name)
+        self.users.append(self._current_user)
 
     def get_user(self, name: str) -> User | None:
         for user in self.users:
             if user.name == name:
                 return user
+
+    @property
+    def current_user(self) -> User | None:
+        return self._current_user
+
+    def set_current_user(self, user_name: str) -> None:
+        self._current_user = self.get_user(user_name)

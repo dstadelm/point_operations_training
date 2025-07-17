@@ -7,10 +7,6 @@ from textual.widgets import Footer, Header, Label
 
 class ResultScreen(ModalScreen[str]):
 
-    BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
-        ("enter", "app.new_assignment", "New Assignment"),
-    ]
-
     def __init__(self, results: str) -> None:
         self._results: str = results
         self.result_message: str = f"{self._results}"
@@ -24,3 +20,7 @@ class ResultScreen(ModalScreen[str]):
 
     def on_key(self) -> None:
         _ = self.dismiss()
+
+    def on_mount(self) -> None:
+        self.app.title = "Result"
+        self.title = "Result"  # pyright: ignore [reportUnannotatedClassAttribute]

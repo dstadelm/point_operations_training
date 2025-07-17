@@ -33,6 +33,10 @@ class WelcomeState:
         """Initialize the presenter and switch to WelcomeState."""
         self.presenter.switch_to_welcome_state()
 
+    def stats(self) -> None:
+        """Switch state to StatsState."""
+        self.presenter.switch_to_stats_state()
+
     @override
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}"
