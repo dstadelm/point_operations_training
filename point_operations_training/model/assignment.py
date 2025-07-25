@@ -9,7 +9,7 @@ class Assignment(ABC):
 
     def __init__(self) -> None:
         self.timer: Timer = Timer(name="assignment")
-        self._assignment: tuple[int, int] = (0, 0)
+        self._assignment: tuple[int, int, int] = (0, 0, 0)
         self._modus_operandi: str = ""
 
     def start(self) -> None:
@@ -23,7 +23,7 @@ class Assignment(ABC):
         return self._modus_operandi
 
     @property
-    def assignment(self) -> tuple[int, int]:
+    def assignment(self) -> tuple[int, int, int]:
         return self._assignment
 
     @property
@@ -38,19 +38,21 @@ class Assignment(ABC):
 class MultiplicationAssignment(Assignment):
     def __init__(self) -> None:
         super().__init__()
-        self._assignment: tuple[int, int] = (randint(1, 9), randint(1, 9))
+        a: int = randint(1, 9)
+        b: int = randint(1, 9)
+        c: int = a * b
+        self._assignment: tuple[int, int, int] = (a, b, c)
         self._modus_operandi: str = "x"
 
 
 class TensMultiplicationAssignment(Assignment):
     def __init__(self) -> None:
         super().__init__()
-        a: int = randint(0, 1)
-        b: int = 1 - a
-        self._assignment: tuple[int, int] = (
-            10**a * randint(1, 9),
-            10**b * randint(1, 9),
-        )
+        x: int = randint(0, 1)
+        a: int = 10**x * randint(1, 9)  # pyright: ignore [reportAny]
+        b: int = 10 ** (1 - x) * randint(1, 9)  # pyright: ignore [reportAny]
+        c: int = a * b
+        self._assignment: tuple[int, int, int] = (a, b, c)
         self._modus_operandi: str = "x"
 
 
@@ -60,10 +62,7 @@ class DivisionAssignment(Assignment):
         b = randint(1, 9)
         c = randint(1, 9)
         a = b * c
-        self._assignment: tuple[int, int] = (
-            a,
-            b,
-        )
+        self._assignment: tuple[int, int, int] = (a, b, c)
         self._modus_operandi: str = ":"
 
 

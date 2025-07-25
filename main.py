@@ -1,4 +1,4 @@
-#! /usr/bin/env -S uv run --no-project --with numpy --with textual --with textual-plotext --python 3.13 python
+#! /usr/bin/env -S uv run --no-project --with numpy --with textual --with textual-plotext --with matplotlib --python 3.13 python
 from pathlib import Path
 
 from point_operations_training.model.assignment_model import AssignmentModel

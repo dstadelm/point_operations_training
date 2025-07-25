@@ -29,11 +29,18 @@ class Session:
         self._prev_idx: int = -1
         self._training_percentage: int = 20
         self._trained_assignments: int = 0
+        self._one_with_one: bool = False
 
     def get_new_assignment(self) -> str:
         if len(self._assignments.assignments) >= self._num_assignments:
             raise StopIteration()
         self._current_assignement = self._assignment_factory()
+        while 1 in self._current_assignement.assignment and self._one_with_one:
+            self._current_assignement = self._assignment_factory()
+
+        if 1 in self._current_assignement.assignment:
+            self._one_with_one = True
+
         self._current_assignement.start()
         return str(self._current_assignement)
 

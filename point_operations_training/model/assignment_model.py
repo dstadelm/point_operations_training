@@ -12,7 +12,6 @@ class AssignmentModel:
         self._db: DataBase = DataBase(data_base_file)
         self._user_collection: UserCollection = self._db.get_user_collection()
         self._session: Session | None = None
-        self._modus: Modus = Modus.MULTIPLICATION
 
     @property
     def users(self) -> list[str]:
@@ -38,17 +37,24 @@ class AssignmentModel:
     @property
     def modus(self) -> Modus:
         """Returns the current modus."""
-        return self._modus
+        if self._user_collection.current_user:
+            return self._user_collection.current_user.modus
+        else:
+            return Modus.MULTIPLICATION
 
     @modus.setter
     def modus(self, modus: Modus) -> None:
-        self._modus = modus
+        if self._user_collection.current_user:
+            self._user_collection.current_user.modus = modus
 
     def start_session(self) -> None:
         """Starts a new session for the current user with the given modus."""
         if not self._user_collection.current_user:
             raise ValueError("No current user set.")
-        self._session = Session(self._user_collection.current_user.name, self._modus)
+        self._session = Session(
+            self._user_collection.current_user.name,
+            self._user_collection.current_user.modus,
+        )
 
     def get_new_assignment(self) -> str:
         """Returns a new assignment for the current session."""
@@ -88,8 +94,8 @@ class AssignmentModel:
         result = result_from_session(self._session)
 
         if user:
-            user.add_result(str(self._modus.value), result)
-            user.get_max_matrix(str(self._modus.value)).update(self._session)
+            user.add_result(result)
+            user.get_max_matrix().update(self._session)
             self._db.save_db(self._user_collection)
 
     def session_min(self) -> float:
@@ -109,8 +115,6 @@ class AssignmentModel:
 
     def get_results(self) -> ResultCollection:
         if self._user_collection.current_user:
-            return self._user_collection.current_user.get_results(
-                str(self._modus.value)
-            )
+            return self._user_collection.current_user.get_results()
         else:
             return ResultCollection()

@@ -4,8 +4,9 @@ from point_operations_training.model.result import (
     ResultCollection,
     ResultCollectionType,
 )
+from point_operations_training.presenter.modus import Modus
 
-UserType = dict[str, dict[str, ResultCollectionType | MaxMatrixType]]
+UserType = dict[str, dict[str, ResultCollectionType | MaxMatrixType] | str]
 
 
 class User:
@@ -13,50 +14,66 @@ class User:
         self.name: str = name
         self.results: dict[str, ResultCollection] = {}
         self.max_matrices: dict[str, MaxMatrix] = {}
+        self.modus: Modus = Modus.MULTIPLICATION
 
-    def get_max_matrix(self, modus_operandi: str) -> MaxMatrix:
-        return self.max_matrices.setdefault(modus_operandi, MaxMatrix())
+    def get_max_matrix(self) -> MaxMatrix:
+        return self.max_matrices.setdefault(str(self.modus.value), MaxMatrix())
 
-    def avg_series(self, modus_operandi: str) -> list[float]:
-        return self.results[modus_operandi].avg_series()
+    def avg_series(self) -> list[float]:
+        return self.results[str(self.modus.value)].avg_series()
 
-    def max_series(self, modus_operandi: str) -> list[float]:
-        return self.results[modus_operandi].max_series()
+    def max_series(self) -> list[float]:
+        return self.results[str(self.modus.value)].max_series()
 
-    def min_series(self, modus_operandi: str) -> list[float]:
-        return self.results[modus_operandi].min_series()
+    def min_series(self) -> list[float]:
+        return self.results[str(self.modus.value)].min_series()
 
-    def add_result(self, modus_operandi: str, result: Result) -> None:
-        self.results.setdefault(modus_operandi, ResultCollection()).add_result(result)
+    def add_result(self, result: Result) -> None:
+        self.results.setdefault(str(self.modus.value), ResultCollection()).add_result(
+            result
+        )
 
-    def get_results(self, modus_operandi: str) -> ResultCollection:
-        return self.results[modus_operandi]
+    def get_results(self) -> ResultCollection:
+        return self.results[str(self.modus.value)]
 
     def from_dict(
         self,
         data: UserType,
     ) -> None:
-        for modus_operandi in data.keys():
-            for key, value in data[modus_operandi].items():
-                if key == "results":
-                    self.results[modus_operandi] = ResultCollection()
-                    self.results[modus_operandi].from_dict(
-                        value  # pyright: ignore [reportArgumentType]
-                    )
-                if key == "max_matrix":
-                    self.max_matrices[modus_operandi] = MaxMatrix()
-                    self.max_matrices[modus_operandi].matrix = (
-                        value  # pyright: ignore [reportAttributeAccessIssue]
-                    )
+        for outer_key in data.keys():
+
+            if outer_key == "last_modus":
+                for m in Modus:
+                    if str(m.value) == data[outer_key]:
+                        self.modus = m
+
+            else:
+                # we have the results of a modus
+                modus = data[outer_key]
+                if isinstance(modus, dict):
+                    for key, value in modus.items():
+                        if key == "results":
+                            self.results[outer_key] = ResultCollection()
+                            self.results[outer_key].from_dict(
+                                value  # pyright: ignore [reportArgumentType]
+                            )
+                        if key == "max_matrix":
+                            self.max_matrices[outer_key] = MaxMatrix()
+                            self.max_matrices[outer_key].matrix = (
+                                value  # pyright: ignore [reportAttributeAccessIssue]
+                            )
 
     def to_dict(self) -> UserType:
         data: UserType = {}
+        data["last_modus"] = str(self.modus.value)
         for modus_operandi, result in self.results.items():
             data[modus_operandi] = {}
-            data[modus_operandi]["results"] = result.to_dict()
-            data[modus_operandi]["max_matrix"] = self.max_matrices[
-                modus_operandi
-            ].matrix
+            data[modus_operandi][  # pyright: ignore [reportIndexIssue]
+                "results"
+            ] = result.to_dict()
+            data[modus_operandi]["max_matrix"] = (  # pyright: ignore [reportIndexIssue]
+                self.max_matrices[modus_operandi].matrix
+            )
 
         return data
 
