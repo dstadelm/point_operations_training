@@ -6,7 +6,7 @@ from textual.screen import Screen
 from textual.widgets import Button, Label
 
 
-class QuitScreen(Screen):  # pyright: ignore [reportMissingTypeArgument]
+class QuitScreen(Screen[None]):
     """Screen with a dialog to quit."""
 
     @override
@@ -24,5 +24,4 @@ class QuitScreen(Screen):  # pyright: ignore [reportMissingTypeArgument]
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "quit":
             self.app.exit()
-        else:
-            _ = self.app.pop_screen()
+        _ = self.dismiss()

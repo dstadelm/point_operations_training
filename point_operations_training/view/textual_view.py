@@ -113,7 +113,7 @@ class TextualView(App):  # pyright: ignore [reportMissingTypeArgument]
 
     def action_request_quit(self) -> None:
         self.clear()
-        _ = self.push_screen(QuitScreen())
+        _ = self.push_screen(QuitScreen(), callback=self.on_home())
 
     def action_select_user(self) -> None:
         self.on_select_user()
