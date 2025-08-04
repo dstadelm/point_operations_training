@@ -19,7 +19,7 @@ class TextualView(App):  # pyright: ignore [reportMissingTypeArgument]
     CSS_PATH = "view.tcss"  # pyright: ignore [reportUnannotatedClassAttribute]
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
         ("enter", "new_assignment", "New Assignment"),
-        ("escape", "home", "Home"),
+        ("h", "home", "Home"),
         ("u", "select_user", "Select user"),
         ("o", "select_modi_operandi", "Select operation"),
         ("d", "toggle_dark", "Toggle dark mode"),

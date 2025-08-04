@@ -13,7 +13,7 @@ from point_operations_training.model.result import ResultCollectionProtocol
 class StatsScreen(ModalScreen[str]):
 
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
-        ("escape", "app.home", "Home"),
+        ("h", "app.home", "Home"),
         ("q", "app.request_quit", "Quit"),
     ]
 

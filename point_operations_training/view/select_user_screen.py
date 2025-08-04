@@ -9,7 +9,7 @@ from textual.widgets import Footer, Header, Label, ListItem, ListView, Static
 class SelectUserScreen(ModalScreen[str]):
 
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
-        ("escape", "app.home", "Home"),
+        ("h", "app.home", "Home"),
         ("o", "app.select_modi_operandi", "Select operation"),
         ("q", "app.request_quit", "Quit"),
     ]

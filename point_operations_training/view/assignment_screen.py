@@ -10,7 +10,7 @@ class AssignmentScreen(ModalScreen[str]):
 
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
         ("enter", "app.new_assignment", "Next"),
-        ("escape", "app.home", "Home"),
+        ("h", "app.home", "Home"),
         ("q", "app.request_quit", "Quit"),
     ]
 

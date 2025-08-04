@@ -11,7 +11,7 @@ from point_operations_training.presenter.modus import Modus
 class SelectModusScreen(ModalScreen[Modus]):
 
     BINDINGS = [  # pyright: ignore [reportUnannotatedClassAttribute]
-        ("escape", "app.home", "Home"),
+        ("h", "app.home", "Home"),
         ("u", "app.select_user", "Select user"),
         ("q", "app.request_quit", "Quit"),
     ]
