@@ -45,6 +45,15 @@ class Assignment(ABC):
     def __str__(self) -> str:
         return f"{self._assignment[0]} {self.modus_operandi} {self._assignment[1]}"
 
+    @override
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Assignment):
+            return NotImplemented
+        return (
+            self._assignment == other._assignment
+            and self.modus_operandi == other.modus_operandi
+        )
+
 
 class MultiplicationAssignment(Assignment):
     def __init__(self, a: int = 0, b: int = 0) -> None:

@@ -48,6 +48,10 @@ class Session:
                 raise StopIteration()
             self._current_assignement = self._assignment_factory()
 
+        # prevent the same assignment from being generated twice in a row
+        if self._current_assignement in self._assignments.assignments:
+            self._current_assignement = self._assignment_factory()
+
         self._current_assignement.start()
         return str(self._current_assignement)
 
