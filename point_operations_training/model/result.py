@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import Protocol
 
-from point_operations_training.model.session import Session
-
 
 class Result:
     def __init__(
@@ -16,15 +14,6 @@ class Result:
         self.avg: float = avg
         self.max: float = max
         self.min: float = min
-
-
-def result_from_session(session: Session) -> Result:
-    return Result(
-        session.date,
-        session.avg,
-        session.max,
-        session.min,
-    )
 
 
 ResultCollectionType = list[dict[str, str | float]]

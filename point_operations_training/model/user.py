@@ -16,7 +16,8 @@ class User:
         self.max_matrices: dict[str, MaxMatrix] = {}
         self.modus: Modus = Modus.MULTIPLICATION
 
-    def get_max_matrix(self) -> MaxMatrix:
+    @property
+    def max_matrix(self) -> MaxMatrix:
         return self.max_matrices.setdefault(str(self.modus.value), MaxMatrix())
 
     def avg_series(self) -> list[float]:

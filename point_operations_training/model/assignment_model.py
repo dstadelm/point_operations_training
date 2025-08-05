@@ -1,10 +1,19 @@
 from pathlib import Path
 
 from point_operations_training.model.data_base import DataBase
-from point_operations_training.model.result import ResultCollection, result_from_session
+from point_operations_training.model.result import Result, ResultCollection
 from point_operations_training.model.session import Session
 from point_operations_training.model.user import UserCollection
 from point_operations_training.presenter.modus import Modus
+
+
+def result_from_session(session: Session) -> Result:
+    return Result(
+        session.date,
+        session.avg,
+        session.max,
+        session.min,
+    )
 
 
 class AssignmentModel:
@@ -52,8 +61,7 @@ class AssignmentModel:
         if not self._user_collection.current_user:
             raise ValueError("No current user set.")
         self._session = Session(
-            self._user_collection.current_user.name,
-            self._user_collection.current_user.modus,
+            user=self._user_collection.current_user,
         )
 
     def get_new_assignment(self) -> str:
@@ -95,7 +103,7 @@ class AssignmentModel:
 
         if user:
             user.add_result(result)
-            user.get_max_matrix().update(self._session)
+            user.max_matrix.update(self._session.assignments)
             self._db.save_db(self._user_collection)
 
     def session_min(self) -> float:

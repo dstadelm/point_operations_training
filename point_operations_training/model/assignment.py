@@ -1,14 +1,25 @@
 from abc import ABC
-from random import randint
+from random import choices, randint
 from typing import Protocol, override
 
 from point_operations_training.utilities.timer import Timer
 
 
+def get_rand_val_with_distribution() -> int:
+    return choices(population=range(1, 10), weights=[1, 2, 4, 4, 4, 4, 4, 4, 4], k=1)[0]
+
+
 class Assignment(ABC):
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        a: int = 0,
+        b: int = 0,
+    ) -> None:
+
         self.timer: Timer = Timer(name="assignment")
+        self.a: int = a if a != 0 else get_rand_val_with_distribution()
+        self.b: int = b if b != 0 else get_rand_val_with_distribution()
         self._assignment: tuple[int, int, int] = (0, 0, 0)
         self._modus_operandi: str = ""
 
@@ -36,45 +47,47 @@ class Assignment(ABC):
 
 
 class MultiplicationAssignment(Assignment):
-    def __init__(self) -> None:
-        super().__init__()
-        a: int = randint(1, 9)
-        b: int = randint(1, 9)
-        c: int = a * b
-        self._assignment: tuple[int, int, int] = (a, b, c)
+    def __init__(self, a: int = 0, b: int = 0) -> None:
+        super().__init__(a, b)
+        c: int = self.a * self.b
+        self._assignment: tuple[int, int, int] = (self.a, self.b, c)
         self._modus_operandi: str = "x"
 
 
 class TensMultiplicationAssignment(Assignment):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, a: int = 0, b: int = 0) -> None:
+        super().__init__(a, b)
         x: int = randint(0, 1)
-        a: int = 10**x * randint(1, 9)  # pyright: ignore [reportAny]
-        b: int = 10 ** (1 - x) * randint(1, 9)  # pyright: ignore [reportAny]
+        ax10: int = 10**x  # pyright: ignore[reportAny]
+        bx10: int = 10 ** (1 - x)  # pyright: ignore[reportAny]
+        ia: int = ax10 * self.a
+        ib: int = bx10 * self.b
         c: int = a * b
-        self._assignment: tuple[int, int, int] = (a, b, c)
+        self._assignment: tuple[int, int, int] = (ia, ib, c)
         self._modus_operandi: str = "x"
 
 
 class DivisionAssignment(Assignment):
-    def __init__(self) -> None:
-        super().__init__()
-        b = randint(1, 9)
-        c = randint(1, 9)
-        a = b * c
-        self._assignment: tuple[int, int, int] = (a, b, c)
+    def __init__(self, a: int = 0, b: int = 0) -> None:
+        super().__init__(a, b)
+        c = self.a * self.b
+        self._assignment: tuple[int, int, int] = (self.a, self.b, c)
         self._modus_operandi: str = ":"
+
+    @override
+    def __str__(self) -> str:
+        return f"{self._assignment[2]} {self.modus_operandi} {self._assignment[1]}"
 
 
 class AssignmentFactory(Protocol):
-    def __call__(self) -> Assignment: ...
+    def __call__(self, a: int = 0, b: int = 0) -> Assignment: ...
     @override
     def __str__(self) -> str: ...
 
 
 class MultiplicationAssignmentFactory:
-    def __call__(self) -> Assignment:
-        return MultiplicationAssignment()
+    def __call__(self, a: int = 0, b: int = 0) -> Assignment:
+        return MultiplicationAssignment(a, b)
 
     @override
     def __str__(self) -> str:
@@ -82,8 +95,8 @@ class MultiplicationAssignmentFactory:
 
 
 class TensMultiplicationAssignmentFactory:
-    def __call__(self) -> Assignment:
-        return TensMultiplicationAssignment()
+    def __call__(self, a: int = 0, b: int = 0) -> Assignment:
+        return TensMultiplicationAssignment(a, b)
 
     @override
     def __str__(self) -> str:
@@ -91,8 +104,8 @@ class TensMultiplicationAssignmentFactory:
 
 
 class DivisionAssignmentFactory:
-    def __call__(self) -> Assignment:
-        return DivisionAssignment()
+    def __call__(self, a: int = 0, b: int = 0) -> Assignment:
+        return DivisionAssignment(a, b)
 
     @override
     def __str__(self) -> str:

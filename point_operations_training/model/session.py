@@ -1,27 +1,26 @@
 from collections.abc import Generator
 from datetime import datetime
-from random import randint
+from random import choices, randint
 
 from point_operations_training.model.assignment import (
     Assignment,
     AssignmentCollection,
     AssignmentFactory,
 )
-from point_operations_training.presenter.modus import Modus
+from point_operations_training.model.user import User
 
 
 class Session:
     def __init__(
         self,
-        user_name: str,
-        modus: Modus,
+        user: User,
         num_assignments: int = 20,
         num_training: int = 20,
     ) -> None:
         self._num_assignments: int = num_assignments
         self._num_training: int = num_training
-        self._user_name: str = user_name
-        self._assignment_factory: AssignmentFactory = modus.value
+        self._user: User = user
+        self._assignment_factory: AssignmentFactory = self._user.modus.value
         self.date: str = str(datetime.now())
         self._assignments: AssignmentCollection = AssignmentCollection()
         self._current_assignement: Assignment = self._assignment_factory()
@@ -29,17 +28,25 @@ class Session:
         self._prev_idx: int = -1
         self._training_percentage: int = 20
         self._trained_assignments: int = 0
-        self._one_with_one: bool = False
+        self._last_max_idx: int = 0
+
+    @property
+    def assignments(self) -> AssignmentCollection:
+        """Returns the collection of assignments."""
+        return self._assignments
 
     def get_new_assignment(self) -> str:
-        if len(self._assignments.assignments) >= self._num_assignments:
-            raise StopIteration()
-        self._current_assignement = self._assignment_factory()
-        while 1 in self._current_assignement.assignment and self._one_with_one:
-            self._current_assignement = self._assignment_factory()
+        choice: int = choices([0, 1], weights=[1, 5], k=1)[0]
 
-        if 1 in self._current_assignement.assignment:
-            self._one_with_one = True
+        if choice == 0 and self._last_max_idx < len(self._user.max_matrix):
+            a, b = self._user.max_matrix[self._last_max_idx]
+            self._last_max_idx += 1
+            self._current_assignement = self._assignment_factory(a, b)
+
+        else:
+            if len(self._assignments.assignments) >= self._num_assignments:
+                raise StopIteration()
+            self._current_assignement = self._assignment_factory()
 
         self._current_assignement.start()
         return str(self._current_assignement)
@@ -50,7 +57,7 @@ class Session:
 
     @property
     def user_name(self) -> str:
-        return self._user_name
+        return self._user.name
 
     @property
     def max(self) -> float:
@@ -76,6 +83,7 @@ class Session:
         return self._slowest_assignments
 
     def get_next_train_assignement(self) -> str:
+
         if self._trained_assignments >= self._num_training:
             raise StopIteration()
 
