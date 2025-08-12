@@ -66,12 +66,16 @@ class MultiplicationAssignment(Assignment):
 class TensMultiplicationAssignment(Assignment):
     def __init__(self, a: int = 0, b: int = 0) -> None:
         super().__init__(a, b)
-        x: int = randint(0, 1)
-        ax10: int = 10**x  # pyright: ignore[reportAny]
-        bx10: int = 10 ** (1 - x)  # pyright: ignore[reportAny]
-        ia: int = ax10 * self.a
-        ib: int = bx10 * self.b
-        c: int = a * b
+        ia: int = self.a
+        ib: int = self.b
+        if a == 0:
+            x: int = randint(0, 1)
+            ax10: int = 10**x  # pyright: ignore[reportAny]
+            bx10: int = 10 ** (1 - x)  # pyright: ignore[reportAny]
+            ia = ax10 * self.a
+            ib = bx10 * self.b
+
+        c = ia * ib
         self._assignment: tuple[int, int, int] = (ia, ib, c)
         self._modus_operandi: str = "x"
 
