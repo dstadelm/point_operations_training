@@ -35,7 +35,9 @@ class User:
         )
 
     def get_results(self) -> ResultCollection:
-        return self.results[str(self.modus.value)]
+        if (str(self.modus.value)) in self.results:
+            return self.results[str(self.modus.value)]
+        return ResultCollection()
 
     def from_dict(
         self,

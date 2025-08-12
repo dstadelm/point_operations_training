@@ -39,9 +39,10 @@ class StatsScreen(ModalScreen[str]):
         max_series = self._results.max_series()
         min_series = self._results.min_series()
 
-        plt.plot(avg_series, label="Average")
-        plt.plot(max_series, label="Maximum")
-        plt.plot(min_series, label="Minimim")
+        if avg_series:
+            plt.plot(avg_series, label="Average")
+            plt.plot(max_series, label="Maximum")
+            plt.plot(min_series, label="Minimim")
 
         plt.title("Progress Plot")  # to apply a title
 
