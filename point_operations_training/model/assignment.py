@@ -6,7 +6,7 @@ from point_operations_training.utilities.timer import Timer
 
 
 def get_rand_val_with_distribution() -> int:
-    return choices(population=range(1, 10), weights=[1, 2, 4, 4, 4, 4, 4, 4, 4], k=1)[0]
+    return choices(population=range(1, 10), weights=[1, 2, 8, 8, 8, 8, 8, 8, 8], k=1)[0]
 
 
 class Assignment(ABC):
