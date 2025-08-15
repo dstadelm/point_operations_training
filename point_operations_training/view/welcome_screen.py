@@ -3,7 +3,7 @@ from typing import override
 from textual.app import ComposeResult
 from textual.containers import Center
 from textual.screen import ModalScreen
-from textual.widgets import Button, Footer, Header, Label
+from textual.widgets import Button, Footer, Header, Static
 
 
 class WelcomeScreen(ModalScreen[str]):
@@ -23,21 +23,18 @@ class WelcomeScreen(ModalScreen[str]):
             self.welcome_message: str = f"Welcome back, {self._user}!"
         else:
             self.welcome_message = "Welcome!"
+        self.welcome_message += f"\n\nSelected Modus: {self._modus}\n"
         super().__init__()
 
     def on_mount(self) -> None:
         self.app.title = "Welcome"
         self.title = "Welcome"  # pyright: ignore [reportUnannotatedClassAttribute]
-        button = self.query_one("#start_button", Button)
-        button.action_scroll_end
 
     @override
     def compose(self) -> ComposeResult:
         yield Header()
         with Center():
-            yield Label(self.welcome_message, id="start")
-        with Center():
-            yield Label(f"Selected Modus: {self._modus}", id="modus")
+            yield Static(self.welcome_message, id="start")
         with Center():
             yield Button(
                 "Start",

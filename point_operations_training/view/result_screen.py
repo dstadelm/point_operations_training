@@ -9,6 +9,8 @@ class ResultScreen(ModalScreen[str]):
 
     def __init__(self, results: str) -> None:
         self._results: str = results
+        r = results.split(",")
+        self._results = "\n\n".join(r.strip() for r in r if r.strip())
         self.result_message: str = f"{self._results}"
         super().__init__()
 
